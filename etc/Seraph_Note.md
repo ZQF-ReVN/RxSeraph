@@ -1,4 +1,7 @@
 ## Structures
+
+### File Structures
+
 ```c
 struct Seraph_Dat_Entry
 {
@@ -9,52 +12,82 @@ struct Seraph_Dat_Entry
 struct Seraph_Dat_Data
 {
 	uint32_t uiCompressFlag; //zlib
-	uint8_t aData[??];
-}
+	uint8_t aData[data_size];
+};
 
-struct Seraph_Dat
+struct Seraph_Dat_Segment_File_Entry
+{
+    uint32_t uiDataOffsetInSeg; // -> FOA = SegmengtOffset + uiSeraphDataOffsetInSeg
+    // data_size = uiSeraphDataFOA - next_entry_Offset
+};
+
+struct Seraph_Dat_Segment_Entry
+{
+    uint32_t uiSegmentFOA;
+    uint32_t uiFileCount;
+};
+
+// ArchPac.dat: 0x05EBB40D
+struct Seraph_Dat_Sengmet_HDR
+{
+    uint32_t uiSegmentCount;
+    uint32_t uiFileCount;
+};
+
+struct Seraph_Dat_Type0
 {
 	uint32_t uiFileCount;
 	Seraph_Dat_Entry aEntryList[uiFileCount + 1];// last entry is pack_file_size - 1
 	Seraph_Dat_Data aDataList[uiFileCount]
 };
 
-struct Seraph_ArchIndex
+struct Seraph_Dat_Type1
 {
-	uint32_t uiUn0;
-	uint32_t uiUn1;
-	uint32_t uiUn2;
-};
-
-struct Seraph_Arch_Dat_Segment_File_Entry
-{
-    uint32_t uiDataOffsetInSeg; // -> FOA = SegmengtOffset + uiSeraphDataOffsetInSeg
-    // data_size = uiSeraphDataFOA - next_entry_Offset
-};
-
-struct Seraph_Arch_Dat_Segment_Entry
-{
-    uint32_t uiSegOffset;
-    uint32_t uiFileCount;
-};
-
-// ArchPac.dat: 0x05EBB40D
-struct Seraph_Arch_Dat_File_Entry
-{
-    uint32_t uiTableCount;
-    uint32_t uiFileCount;
-};
-
-struct Seraph_Arch_Dat
-{
-    Seraph_Arch_Dat_File_Entry FileEntry; //<- 雛鳥の堕ちる音: ArchPac.dat: 0x05EBB40D
-    Seraph_Arch_Dat_Segment_Entry aSegEntry[FileEntry.uiTableCount];
-    Seraph_Arch_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[-1].uiFileCount +1];
-    Seraph_Arch_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[-2].uiFileCount + 1];
-    Seraph_Arch_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[-3].uiFileCount + 1];
+    Seraph_Dat_Sengmet_HDR HDR; //<- 雛鳥の堕ちる音: ArchPac.dat: 0x05EBB40D
+    Seraph_Dat_Segment_Entry aSegEntry[HDR.uiSegmentCount];
+    Seraph_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[-1].uiFileCount +1];
+    Seraph_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[-2].uiFileCount + 1];
+    Seraph_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[-3].uiFileCount + 1];
     ...;
-    Seraph_Arch_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[0].uiFileCount + 1]
+    Seraph_Dat_Segment_File_Entry aSegFilesIndex[aSegEntry[0].uiFileCount + 1]
 };
+```
+
+### Memory Structures
+
+```c
+Seraph_Arch_Entry* sg_ArchIndexPtr = 雛鳥の堕ちる音: 0x0045EF9C;
+
+struct Seraph_Arch_Entry
+{
+  uint32_t uiIsCash;
+  Seraph_Dat_Entry Entry;
+};
+
+struct Seraph_Dat_Entry
+{
+  uint32_t uiDataFOA;
+  uint32_t uiDataSize;
+};
+```
+
+## OPCode
+
+```c
+0x00 [push text]
+    00 815C815C815C81778E8497A792E99650816982C482A282D982A4816A8A778980817800
+0x08 [wait time]
+    08 0B -> wait (0xB * 10) ms
+0x0F [jmp to script 2]
+    0F 091F0000 -> jmp to script2 ,set pc to 0x1F09
+0x14 [new line]
+    14
+0x16 [text-indent]
+    16
+0x15 [wait input]
+    15
+0x17 [next page]
+    17
 ```
 
 
