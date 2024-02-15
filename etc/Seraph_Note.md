@@ -71,23 +71,104 @@ struct Seraph_Dat_Entry
 };
 ```
 
+## ParamCode
+
+```c
+[byte:type][??][0xFF]
+05 00000000 FF
+    
+0x19 
+    [byte:op][dword:new pc]
+0x47 [switch to msg command func]
+    47
+```
+
 ## OPCode
+
+```
+0x1F [set packstream param]
+    1F 01 E900 020A00050100000009FF
+    [byte:op][byte:pack_stream_mod][word:seq][param[1]:seq]
+0x60 [load imge]
+    60 01 E500 Parame[4][byte:flag,if flag == 0xFF, add Parame[2]]
+    [byte:op][byte:pack_stream_mod][word:pack_stream_seq][Param[4]][byte:flag,if flag == 0xFF, add Parame[2]]
+    60 FE Parame[4][byte:flag,if flag == 0xFF, add Parame[2]]
+    [byte:op][byte:0xFE,use before pack_stream_param][Param[4]][byte:flag,if flag == 0xFF, add Parame[2]]
+0x71 [load un]
+    71 01 E400
+    [byte:op][byte:ps_mod][word:ps_seq][Param[1]]
+    71 FE 
+    [byte:op][byte:0xFE][word:ps_seq][Param[1]]
+0x74 [unknow]
+    74
+```
+
+
+
+## MsgOPCode
 
 ```c
 0x00 [push text]
     00 815C815C815C81778E8497A792E99650816982C482A282D982A4816A8A778980817800
+0x01 [unknow]
+    01 Param[1]
+    [byte:op][Param[1]]
+0x02 [unknow]
+    02 00
+    [byte:op][byte:un]
+0x03 [unknow]
+    03 00
+    [byte:op][byte:un]
+0x04 [unknow]
+    04 00
+    [byte:op][byte:un]
+0x05 [unknow]
+    05 00
+    [byte:op][byte:un]
+0x06 [unknow]
+    06 00
+    [byte:op][byte:un]
+0x07 [unknow]
+    07 00
+    [byte:op][byte:un]
 0x08 [wait time]
     08 0B -> wait (0xB * 10) ms
-0x0F [jmp to script 2]
+0x09 [unknow]
+    09 00
+    [byte:op][byte:un]
+0x0A [unknow]
+    0A 00
+    [byte:op][byte:un]
+0x0B [unknow]
+    0B 00
+    [byte:op][byte:un]
+0x0E [unknow]
+    0E 00
+    [byte:op][byte:un]
+0x0F [call script 2 xxx]
     0F 091F0000 -> jmp to script2 ,set pc to 0x1F09
+0x10 [unknow]
+    10 00
+    [byte:op][byte:un]
+0x11 [unknow]
+    11 00
+    [byte:op][byte:un]
 0x14 [new line]
     14
-0x16 [text-indent]
-    16
 0x15 [wait input]
     15
+0x16 [text-indent]
+    16
 0x17 [next page]
     17
+0x18 [voice play]
+    18 F0040000
+    [byte:op][dword:voice file seq]
+0x19 [unknow]
+    19
+    [byte:op]
+0xFF [end]
+    FF
 ```
 
 
