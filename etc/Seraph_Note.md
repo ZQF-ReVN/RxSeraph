@@ -76,6 +76,10 @@ struct Seraph_Dat_Entry
 ### ExpressionCommand
 
 ```c
+0x05 [dword]
+    05 [dword]
+0x07 [random_dword]
+    07 [dword:retain]
 0x08 [+]
 0x09 [-]
 0x0A [*]
@@ -92,11 +96,13 @@ struct Seraph_Dat_Entry
 0x16 [>]
 0x17 [& == 0]
 0x18 [| == 0]
+0x19 [set_pc]
+    19 [dword:new_pc]
 ```
 
 ### SystemCommand
 
-```
+```c
 0x5
 	05 00000000 FF
 	[byte:type][??][0xFF]
@@ -111,6 +117,14 @@ struct Seraph_Dat_Entry
 0x1F [set packstream param]
     1F 01 E900 020A00050100000009FF
     [byte:op][byte:pack_stream_mod][word:seq][param[1]:seq]
+0x48 [font_color_set]
+    48 [EXP:color_r][EXP:color_g][EXP:color_b]
+0x49 [font_rect_set]
+    49 [EXP:width][EXP:heigh]
+0x4A [unknow_set]
+    4A [EXP:un]
+0x4B [unknow_set]
+    4B [EXP:un]
 0x56 [set_select]
 	56 [Param[5]][val...][text_0][text_1]
 0x57 [get_pressed_key]
@@ -119,9 +133,9 @@ struct Seraph_Dat_Entry
 	5B
 0x5C [get_click_rect]
 	5C
-0x60 [load imge]
-    60 01 E500 Parame[4][byte:flag,if flag == 0xFF, add Parame[2]]
-    [byte:op][byte:pack_stream_mod][word:pack_stream_seq][Param[4]][byte:flag,if flag == 0xFF, add Parame[2]]
+0x60 [load_imge]
+    60 01 E500 [EXP[4]][byte:flag,if flag == 0xFF, add Parame[2]]
+    [byte:op][byte:pack_stream_mod][word:pack_stream_seq][EXP[4]][byte:flag,if flag == 0xFF, add Parame[2]]
     60 FE Parame[4][byte:flag,if flag == 0xFF, add Parame[2]]
     [byte:op][byte:0xFE,use before pack_stream_param][Param[4]][byte:flag,if flag == 0xFF, add Parame[2]]
 0x71 [load un]
@@ -131,6 +145,29 @@ struct Seraph_Dat_Entry
     [byte:op][byte:0xFE][word:ps_seq][Param[1]]
 0x74 [unknow]
     74
+0X9C [cls_background]
+    9C
+0x9E [copy_imge]
+    9E [EXP]
+0x9F [music_open]
+    9F [EXP]
+0xA0 [music_play]
+    A0 [byte:]
+0xA1 [music_stop]
+    A1 
+0xA2 [music_close]
+    A2
+0xA6 [music_play_]
+    A6
+0xAA [music_cd_drive_play]
+    AA
+0xAB [music_cd_drive_stop]
+    AB
+0xAE [??]
+    [EXP]
+0xD5 [bmp_load]
+    D5
+
 ```
 
 ### SecnarioCommand
@@ -141,15 +178,15 @@ struct Seraph_Dat_Entry
 0x01 [format_text]
     01 Param[1]
     [byte:op][Param[1]]
-0x02 [set_font_color]
+0x02 [set_font_color_r]
     02 00
     [byte:op][byte:color]
-0x03 [unknow]
+0x03 [set_font_color_g]
     03 00
-    [byte:op][byte:un]
-0x04 [unknow]
+    [byte:op][byte:color_g]
+0x04 [set_font_color_b]
     04 00
-    [byte:op][byte:un]
+    [byte:op][byte:color_b]
 0x05 [set_font_width]
     05 00
     [byte:op][byte:font_width]
@@ -173,7 +210,7 @@ struct Seraph_Dat_Entry
 0x0E [unknow]
     0E 00
     [byte:op][byte:un]
-0x0F [play sound]
+0x0F [play_se]
     0F 00
     [byte:op][byte:sound seq]
 0x10 [unknow]
@@ -182,15 +219,15 @@ struct Seraph_Dat_Entry
 0x11 [unknow]
     11 00
     [byte:op][byte:un]
-0x14 [new line]
+0x14 [new_line]
     14
 0x15 [render text and wait input]
     15
-0x16 [text indent]
+0x16 [text_indent]
     16
-0x17 [next page]
+0x17 [next_page]
     17
-0x18 [voice play]
+0x18 [play_voice]
     18 F0040000
     [byte:op][dword:voice file seq]
 0x19 [shake_screen]
