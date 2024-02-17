@@ -71,24 +71,54 @@ struct Seraph_Dat_Entry
 };
 ```
 
-## ParamCode
+## Command
+
+### ExpressionCommand
 
 ```c
-[byte:type][??][0xFF]
-05 00000000 FF
-    
+0x08 [+]
+0x09 [-]
+0x0A [*]
+0x0B [/]
+0x0C [%]
+0x0D [&]
+0x0E [|]
+0x0F [^]
+0x11 [==]
+0x12 [!=]
+0x13 [<=]
+0x14 [>=]
+0x15 [<]
+0x16 [>]
+0x17 [& == 0]
+0x18 [| == 0]
+```
+
+### SystemCommand
+
+```
+0x5
+	05 00000000 FF
+	[byte:type][??][0xFF]
 0x19 
     [byte:op][dword:new pc]
 0x47 [switch to msg command func]
     47
-```
-
-## OPCode
-
-```
+0x0F [call script 2 xxx]
+    0F 091F0000 -> jmp to script2 ,set pc to 0x1F09
+0x0E [jmp]
+    
 0x1F [set packstream param]
     1F 01 E900 020A00050100000009FF
     [byte:op][byte:pack_stream_mod][word:seq][param[1]:seq]
+0x56 [set_select]
+	56 [Param[5]][val...][text_0][text_1]
+0x57 [get_pressed_key]
+	57
+0x5B [get_click_rect]
+	5B
+0x5C [get_click_rect]
+	5C
 0x60 [load imge]
     60 01 E500 Parame[4][byte:flag,if flag == 0xFF, add Parame[2]]
     [byte:op][byte:pack_stream_mod][word:pack_stream_seq][Param[4]][byte:flag,if flag == 0xFF, add Parame[2]]
@@ -103,50 +133,49 @@ struct Seraph_Dat_Entry
     74
 ```
 
-
-
-## MsgOPCode
+### SecnarioCommand
 
 ```c
-0x00 [push text]
+0x00 [push_text]
     00 815C815C815C81778E8497A792E99650816982C482A282D982A4816A8A778980817800
-0x01 [unknow]
+0x01 [format_text]
     01 Param[1]
     [byte:op][Param[1]]
-0x02 [unknow]
+0x02 [set_font_color]
     02 00
-    [byte:op][byte:un]
+    [byte:op][byte:color]
 0x03 [unknow]
     03 00
     [byte:op][byte:un]
 0x04 [unknow]
     04 00
     [byte:op][byte:un]
-0x05 [unknow]
+0x05 [set_font_width]
     05 00
-    [byte:op][byte:un]
-0x06 [unknow]
+    [byte:op][byte:font_width]
+0x06 [set_font_heigh]
     06 00
-    [byte:op][byte:un]
-0x07 [unknow]
+    [byte:op][byte:font_heigh]
+0x07 [not_used]
     07 00
     [byte:op][byte:un]
 0x08 [wait time]
     08 0B -> wait (0xB * 10) ms
-0x09 [unknow]
+0x09 [unknow_draw_text_flag]
     09 00
     [byte:op][byte:un]
 0x0A [unknow]
     0A 00
     [byte:op][byte:un]
-0x0B [unknow]
+0x0B [unknow_draw_text_flag]
     0B 00
     [byte:op][byte:un]
 0x0E [unknow]
     0E 00
     [byte:op][byte:un]
-0x0F [call script 2 xxx]
-    0F 091F0000 -> jmp to script2 ,set pc to 0x1F09
+0x0F [play sound]
+    0F 00
+    [byte:op][byte:sound seq]
 0x10 [unknow]
     10 00
     [byte:op][byte:un]
@@ -155,16 +184,16 @@ struct Seraph_Dat_Entry
     [byte:op][byte:un]
 0x14 [new line]
     14
-0x15 [wait input]
+0x15 [render text and wait input]
     15
-0x16 [text-indent]
+0x16 [text indent]
     16
 0x17 [next page]
     17
 0x18 [voice play]
     18 F0040000
     [byte:op][dword:voice file seq]
-0x19 [unknow]
+0x19 [shake_screen]
     19
     [byte:op]
 0xFF [end]

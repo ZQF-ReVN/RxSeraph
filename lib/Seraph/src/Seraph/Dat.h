@@ -1,4 +1,5 @@
 #pragma once
+#include <span>
 #include <ranges>
 #include <vector>
 #include <filesystem>
@@ -33,6 +34,7 @@ namespace Seraph
 		{
 
 		}
+
 
 		void ReadIndexBased(Rut::RxFile::Binary& ifsPack, uint32_t uiDataBegOffset, uint32_t uiFileCount)
 		{
@@ -129,17 +131,17 @@ namespace Seraph
 			return ite_size;
 		}
 
-		void ZLIBDecompress(Rut::RxMem::Auto& rfBuffer, uint8_t* pCompressedData, uint32_t uiCompressedSize)
+		void ZLIBDecompress(Rut::RxMem::Auto& amBuffer, std::span<uint8_t> spData)
 		{
-			uLong compressed_size = (uLong)uiCompressedSize;
-			const Bytef* compressed_data_ptr = (Bytef*)pCompressedData;
-			uLongf uncompressed_size = (uLongf)uiCompressedSize;
+			uLong compressed_size = (uLong)spData.size();
+			const Bytef* compressed_data_ptr = (Bytef*)spData.data();
+			uLongf uncompressed_size = (uLongf)spData.size();
 			size_t status = Z_FILTERED;
-			for (size_t ite_times = 0; ite_times < 4; ite_times++)
+			for (auto ite_times : std::views::iota(0, 4))
 			{
 				uncompressed_size *= 2;
-				rfBuffer.SetSize(uncompressed_size);
-				status = ::uncompress(rfBuffer.GetPtr(), &uncompressed_size, compressed_data_ptr, compressed_size);
+				amBuffer.SetSize(uncompressed_size);
+				status = ::uncompress(amBuffer.GetPtr(), &uncompressed_size, compressed_data_ptr, compressed_size);
 				if (status == Z_OK) { break; }
 			}
 
@@ -148,7 +150,7 @@ namespace Seraph
 				throw std::runtime_error("zlib decompress failed!");
 			}
 
-			rfBuffer.SetSize(uncompressed_size);
+			amBuffer.SetSize(uncompressed_size);
 		}
 
 		void Decrypt(Rut::RxMem::Auto& amEncBuffer, Rut::RxMem::Auto& amDecBuffer)
@@ -159,13 +161,14 @@ namespace Seraph
 			{
 				uint32_t compressed_size = amEncBuffer.GetSize() - sizeof(flag);
 				uint8_t* compressed_data_ptr = amEncBuffer.GetPtr() + sizeof(flag);
-				this->ZLIBDecompress(amDecBuffer, compressed_data_ptr, compressed_size);
+				this->ZLIBDecompress(amDecBuffer, { compressed_data_ptr, compressed_size });
 			}
 			else
 			{
 				throw std::runtime_error("Seraph::Dat::Decrypt: Unknow Format!");
 			}
 		}
+
 
 		std::wstring CheckFileType(Rut::RxMem::Auto& amFile)
 		{
@@ -194,15 +197,14 @@ namespace Seraph
 			Rut::RxMem::Auto dec_buffer(0x64000);
 
 			size_t file_count = m_vcIndex.size();
-			size_t ite_seq = 0;
-			for (auto& entry : m_vcIndex)
+			for (auto [seq, entry] : std::views::enumerate(m_vcIndex))
 			{
 				raw_buffer.ReadData(ifs_pack, entry.m_uiSize, entry.m_uiFOA);
 				this->Decrypt(raw_buffer, dec_buffer);
 
-				std::filesystem::path file_save_path = folder / NumToStr(L"%d", ite_seq);
+				std::filesystem::path file_save_path = folder / NumToStr(L"%d", seq);
 
-				if (ite_seq > 1 && ite_seq < (file_count -3))
+				if (seq > 1 && seq < (file_count -3))
 				{
 					size_t dec_size = this->LZ77Decompress(dec_buffer.GetPtr(), raw_buffer.GetPtr());
 					raw_buffer.SetSize(dec_size);
@@ -212,8 +214,6 @@ namespace Seraph
 				{
 					dec_buffer.SaveData(file_save_path);
 				}
-
-				ite_seq++;
 			}
 		}
 
