@@ -69,6 +69,23 @@ struct Seraph_Dat_Entry
   uint32_t uiDataFOA;
   uint32_t uiDataSize;
 };
+
+
+struct Seraph_Music_FileName_Table_Entry
+{
+    uint8_t ucSeq;
+    char aFileName[??]; //with null char
+    uint8_t ucFlag;
+   	if ucFlag
+        
+    else
+        uint16_t usUn;
+};
+
+struct Seraph_Music_FileName_Table
+{
+    Seraph_Music_FileName_Table_Entry aIndex[??]
+}
 ```
 
 ## Command
@@ -103,93 +120,405 @@ struct Seraph_Dat_Entry
 ### SystemCommand
 
 ```c
-0x5
-	05 00000000 FF
-	[byte:type][??][0xFF]
-0x19 
-    [byte:op][dword:new pc]
-0x47 [switch to msg command func]
-    47
-0x0F [call script 2 xxx]
-    0F 091F0000 -> jmp to script2 ,set pc to 0x1F09
-0x0E [jmp]
-    0E
-0x1F [set packstream param]
-    1F 01 E900 020A00050100000009FF
-    [byte:op][byte:pack_stream_mod][word:seq][param[1]:seq]
-0x28 [enable_menu_skip]
-    28
-0x48 [font_color_set]
-    48 [EXP:color_r][EXP:color_g][EXP:color_b]
-0x49 [font_rect_set]
-    49 [EXP:width][EXP:heigh]
-0x4A [unknow_set]
-    4A [EXP:un]
-0x4B [unknow_set]
-    4B [EXP:un]
-0x56 [set_select]
-	56 [Param[5]][val...][text_0][text_1]
-0x57 [get_pressed_key]
-	57
-0x5B [get_click_rect]
-	5B
-0x5C [get_click_rect]
-	5C
-0x60 [load_imge]
-    60 01 E500 [EXP[4]][byte:flag,if flag == 0xFF, add Parame[2]]
-    [byte:op][byte:pack_stream_mod][word:pack_stream_seq][EXP[4]][byte:flag,if flag == 0xFF, add Parame[2]]
-    60 FE Parame[4][byte:flag,if flag == 0xFF, add Parame[2]]
-    [byte:op][byte:0xFE,use before pack_stream_param][Param[4]][byte:flag,if flag == 0xFF, add Parame[2]]
-0x71 [load un]
-    71 01 E400
-    [byte:op][byte:ps_mod][word:ps_seq][Param[1]]
-    71 FE 
-    [byte:op][byte:0xFE][word:ps_seq][Param[1]]
-0x74 [unknow]
-    74
-0X9C [cls_background]
-    9C
-0x9E [copy_imge]
-    9E [EXP]
-0x9F [music_open]
-    9F [EXP]
-0xA0 [music_play]
-    A0 [byte:]
-0xA1 [music_stop]
-    A1 
-0xA2 [music_close]
-    A2
-0xA6 [music_play_]
-    A6
-0xA9 [mod_switch_to]
-    A9
-0xAA [music_cd_drive_play]
-    AA
-0xAB [music_cd_drive_stop]
-    AB
-0xAE [??]
-    AE [EXP]
-0xB8 [sav_save]
-    B8 [EXP]
-0xB9 [sav_load]
-    B9 [EXP]
-0xBA [sav_enum]
-    BA [EXP]
-0xBB [env_write]
-    BB
-0xBC [env_read]
-    BC
-0xBE [thumbnail_read_info]
-    BE [EXP:thumbnail_width][EXP:thumbnail_heigh]
-0xBF [thumbnail_create]
-    BF
-0xC0 [thumbnail_draw]
-    C0 [EXP:thumbnail_seq_in_sav_file][EXP:screen_x][EXP:screen_y]
-0xC1 [thumbnail_convert]
-    C1 
-0xD5 [bmp_load]
-    D5
+0x00 [un_command]
+{
+    [BYTE:op]
+    [command]
+};
 
+0x01 [go 0x04]
+0x02 [nop]
+0x03 [go 0x04]
+
+0x04 [jz]
+{
+    [BYTE:op]
+    [EXP:un]
+}; 
+
+0x05 [set_flag]
+{
+    [BYTE:op]
+    [EXP:un]
+}; 
+
+0x06 [check_flag/jne]
+{
+    [BYTE:op]
+    [EXP:un]
+    [DWORD:new_pc] // if check_flag != set_flag -> set pc = new_pc
+};
+
+0x07 [nop]
+0x08 [nop]
+0x09 [nop]
+
+0x0A [set_pc/jmp]
+{
+    [BYTE:op]
+    [DWORD:new_pc]
+};
+
+0x0B [jmp xx]
+{
+    [BYTE:op]
+    [DWORD:new_pc]
+};
+
+0x0C [jmp xx]
+{
+    [BYTE:op]
+};
+
+0x0D [jmp xx]
+{
+    [BYTE:op]
+    [EXP:un]
+    [WORD:un]
+};
+
+0x0E [unknow]
+{
+    [BYTE:op]
+    [EXP:un]
+    [DWORD:un]
+};
+
+0x0F [call script2]
+{
+    [BYTE:op]
+    [DWORD:new_pc] // jmp to script2 ,set pc to new_pc
+};
+
+0x10 [ret script2]
+{
+    [BYTE:op]
+};
+
+0x11 [go 0xFF]
+
+0x12 [unknow]
+{
+    [BYTE:op]
+    [EXP:un]
+    [DWORD:un]
+};
+
+0x13 [jmp_delay]
+{
+    [BYTE:op]
+    [DWORD:pc_back]
+    [EXP:un]
+};
+
+0x14 [ret xxx]
+{
+    [BYTE:op]
+    [BYTE:end_flag] 
+};
+
+0x15 [set_system_commnad_end_flag]
+{
+    [BYTE:op]
+    [BYTE:end_flag] 
+};
+
+0x16 [nop]
+{
+    [BYTE:op]
+};
+
+0x17 [nop]
+{
+    [BYTE:op]
+};
+
+0x18 [arch_open]
+{
+    [BYTE:op]
+    [EXP:arch_index_table_offset]
+};
+
+0x19 [set_cash_flag]
+{
+    [BYTE:op]
+    [BYTE:cash_flag]
+};
+
+0x1A [zero_un_obj]
+{
+    [BYTE:op]
+};
+
+0x1B [unknow]
+{
+    [BYTE:op]
+    if flag = -1
+        [EXP:un]
+     else
+         [WORD:un][BYTE:flag]
+     [BYTE:flag]
+};
+
+0x1C [music_index_read]
+{
+    [BYTE:op]
+    [Seraph_Music_FileName_Table]
+    [BYTE:end_flag=0xFF]
+};
+
+0x1D [music_index2_read]
+{
+    [BYTE:op]
+    [Seraph_Music_FileName_Table]
+    [BYTE:end_flag=0xFF]
+};
+
+0x1E [xxx_index_read]
+{
+    [BYTE:op]
+    ?????
+};
+
+0x1F [set_packstream_param] 
+{
+    [BYTE:op]
+    [BYTE:mod]
+    [WORD:seq]
+    [EXP:seq]
+};
+
+0x20 [xxx_config_flag_read]
+{
+    [BYTE:op]
+    [WORD:un_flag]
+};
+
+0x28 [enable_menu_skip]
+{
+    [BYTE:op]
+};
+
+0x47 [switch_to_secnario_command_func]
+{
+    [BYTE:op]
+};
+
+0x48 [font_color_set]
+{
+    [BYTE:op]
+    [EXP:color_r]
+    [EXP:color_g]
+    [EXP:color_b]
+};
+
+0x49 [font_rect_set]
+{
+    [BYTE:op]
+    [EXP:width]
+    [EXP:heigh]
+};
+
+0x4A [unknow_set]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0x4B [unknow_set]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0x56 [set_select]
+{
+    [BYTE:op]
+    [EXP:un]
+    [EXP:un]
+    [EXP:un]
+    [EXP:un]
+    [EXP:un]
+    [val...]
+    [text_0]
+    [text_1]
+};
+
+0x57 [get_pressed_key]
+{
+    [BYTE:op]
+};
+
+0x5B [get_click_rect]
+{
+    [BYTE:op]
+};
+
+0x5C [get_click_rect]
+{
+    [BYTE:op]
+};
+
+0x60 [load_imge]
+{
+    [BYTE:op]
+    [BYTE:pack_stream_mod]
+    if pack_stream_mod != 0xFF
+        [word:pack_stream_seq]
+    [EXP:un]
+    [EXP:un]
+    [EXP:un]
+    [EXP:un]
+    [BYTE:flag]
+    if flag == 0xFF
+        [EXP:un]
+        [EXP:un]
+};
+
+0x71 [load_un]
+{
+    [BYTE:op]
+    [byte:ps_mod]
+    if ps_mod == 0xFE
+        [word:ps_seq][EXP:un]
+    else
+        [word:ps_seq][EXP:un]
+};
+    
+0x74 [unknow]
+{
+    [BYTE:op]
+};
+
+0X9C [cls_background]
+{
+    [BYTE:op]
+};
+
+0x9E [copy_imge]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0x9F [music_open]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0xA0 [music_play]
+{
+    [BYTE:op]
+    [BYTE:un]
+};
+
+0xA1 [music_stop]
+{
+    [BYTE:op]
+};
+
+0xA2 [music_close]
+{
+    [BYTE:op]
+};
+
+0xA6 [music_play_]
+{
+    [BYTE:op]
+};
+
+0xA9 [mod_switch_to]
+{
+    [BYTE:op]
+};
+
+0xAA [music_cd_drive_play]
+{
+    [BYTE:op]
+};
+
+0xAB [music_cd_drive_stop]
+{
+    [BYTE:op]
+};
+
+0xAE [??]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0xB4 [script_load]
+{
+    [BYTE:op]
+    [pack_stream_param]
+    []
+};
+
+0xB8 [sav_save]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0xB9 [sav_load]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0xBA [sav_enum]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
+0xBB [env_write]
+{
+    [BYTE:op]
+};
+
+0xBC [env_read]
+{
+    [BYTE:op]
+};
+
+0xBE [thumbnail_read_info]
+{
+    [BYTE:op]
+    [EXP:thumbnail_width]
+    [EXP:thumbnail_heigh]
+};
+
+0xBF [thumbnail_create]
+{
+    [BYTE:op]
+};
+
+0xC0 [thumbnail_draw]
+{
+    [BYTE:op]
+    [EXP:thumbnail_seq_in_sav_file]
+    [EXP:screen_x]
+    [EXP:screen_y]
+};
+    
+0xC1 [thumbnail_convert]
+{
+    [BYTE:op]
+}; 
+
+0xD5 [bmp_load]
+{
+    [BYTE:op]
+};
+
+0xFF [read_dword_but_not_used]
+{
+    [BYTE:op]
+    [DWORD:value]
+};
 ```
 
 ### SecnarioCommand
@@ -200,67 +529,137 @@ secnario command begin FF0F091F000047
 
 ```c
 0x00 [push_text]
-    00 815C815C815C81778E8497A792E99650816982C482A282D982A4816A8A778980817800
+{
+    [BYTE:op]
+    char aMsg[??] // with null char
+};
+    
 0x01 [format_text]
-    01 Param[1]
-    [byte:op][Param[1]]
+{
+    [BYTE:op]
+    [EXP:un]
+};
+
 0x02 [set_font_color_r]
-    02 00
-    [byte:op][byte:color]
+{
+    [BYTE:op]
+    [BYTE:color_r]
+};
+
 0x03 [set_font_color_g]
-    03 00
-    [byte:op][byte:color_g]
+{
+    [BYTE:op]
+    [BYTE:color_g]
+};
+
 0x04 [set_font_color_b]
-    04 00
-    [byte:op][byte:color_b]
+{
+    [BYTE:op]
+    [BYTE:color_b]
+};
+
 0x05 [set_font_width]
-    05 00
-    [byte:op][byte:font_width]
+{
+    [BYTE:op]
+    [BYTE:font_width]
+};
+
 0x06 [set_font_heigh]
-    06 00
-    [byte:op][byte:font_heigh]
+{
+    [BYTE:op]
+    [BYTE:font_heigh]
+};
+
 0x07 [not_used]
-    07 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:un]
+};
+
 0x08 [wait time]
-    08 0B -> wait (0xB * 10) ms
+{
+    [BYTE:op]
+    [BYTE:time] 
+};
+// 08 0B -> wait (0xB * 10) ms
+
 0x09 [unknow_draw_text_flag]
-    09 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:un] 
+};
+
 0x0A [unknow]
-    0A 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:un] 
+};
+
 0x0B [unknow_draw_text_flag]
-    0B 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:un] 
+};
+
 0x0E [unknow]
-    0E 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:un] 
+};
+
 0x0F [play_se]
-    0F 00
-    [byte:op][byte:sound seq]
+{
+    [BYTE:op]
+    [BYTE:sound_seq] 
+};
+
 0x10 [unknow]
-    10 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:uj] 
+};
+
 0x11 [unknow]
-    11 00
-    [byte:op][byte:un]
+{
+    [BYTE:op]
+    [BYTE:un] 
+};
+
 0x14 [new_line]
-    14
+{
+    [BYTE:op]
+};
+
 0x15 [render text and wait input]
-    15
+{
+    [BYTE:op]
+};
+
 0x16 [text_indent]
-    16
+{
+    [BYTE:op]
+};
+
 0x17 [next_page]
-    17
+{
+    [BYTE:op]
+};
+
 0x18 [play_voice]
-    18 F0040000
-    [byte:op][dword:voice file seq]
+{
+    [BYTE:op]
+    [DWORD:voice_file_seq]
+};
+
 0x19 [shake_screen]
-    19
-    [byte:op]
+{
+    [BYTE:op]
+};
+
 0xFF [end]
-    FF
+{
+    [BYTE:op]
+};
 ```
 
 
