@@ -666,7 +666,7 @@ secnario command begin FF0F091F000047
 
 ## 文本替换思路
 
-这玩意又是文本夹在代码中间的，分析了vm发现内部有相对或绝对的跳转，肯定是不能直接变换文本长度了。不过找到个SystemCommand的op:0x0A，是直接跳转的指令，也就是直接设置pc，所以理论上也可以使用和[Valkyria](https://github.com/Dir-A/Valkyria_Tools)差不多的思路，即，用vm的jmp指令跳出来，然后改文本再跳回去，有点类似于inline hook的样子，只不过这个是利用vm自己的指令，而且这个引擎的文本控制还是单独指令集的，即，SystemCommand有个指令可以把当前vm解析的指令模式切换到文本控制的指令集SecnarioCommand，而且这个指令集指令很少，基本分析完了，所以只要扫描SystemCommand切换到SecnarioCommand的指令，定位到SecnarioCommand的代码块（切换指令其后就是SecnarioCommand的代码块,扫描的特征码FF0F091F000047，最后这个47就是切换模式，同时SystemCommand的代码块以0xFF指令退出，也就是代码块的结束），然后写个jmp指令跳到文件末尾，解析，就可以随便插入文本了，在代码块结束的位置跳回去就好了。主要是因为文本控制的op很少，分析省时间，完整的op很多，分析要太久，熬不住。
+这玩意又是文本夹在代码中间的，分析了vm发现内部有相对或绝对的跳转，肯定是不能直接变换文本长度了。不过找到个SystemCommand的op:0x0A，是直接跳转的指令，也就是直接设置pc，所以理论上也可以使用和[Valkyria](https://github.com/Dir-A/Valkyria_Tools)差不多的思路，即，用vm的jmp指令跳出来，然后改文本再跳回去，有点类似于inline hook的样子，只不过这个是利用vm自己的指令，而且这个引擎的文本控制还是单独指令集的，即，SystemCommand有个指令可以把当前vm解析的指令模式切换到文本控制的指令集SecnarioCommand，而且这个指令集指令很少，基本分析完了，所以只要扫描SystemCommand切换到SecnarioCommand的指令，定位到SecnarioCommand的代码块（切换指令其后就是SecnarioCommand的代码块,扫描的特征码FF0F091F000047，最后这个47就是切换模式的op，同时SecnarioCommand的代码块以0xFF指令退出，也就是代码块的结束），然后写个jmp指令跳到文件末尾，解析SecnarioCommand的代码块就可以随便插入文本了，在代码块结束的位置跳回去就好了。主要是因为文本控制的op很少，分析省时间，完整的op很多，分析要太久，熬不住。
 
 
 
