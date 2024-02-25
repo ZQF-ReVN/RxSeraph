@@ -95,8 +95,10 @@ namespace Seraph
 		{
 			size_t ite_size = 0;
 			size_t dec_size = (size_t)(*((uint32_t*)pRaw));
-			uint8_t* enc_ptr = pRaw + 4;
+
 			uint8_t* dec_ptr = pDec;
+			uint8_t* enc_ptr = pRaw + 4;
+
 			if (dec_size == 0) { return 0; }
 
 			do
@@ -105,10 +107,12 @@ namespace Seraph
 				if (token & 0x80) // expand
 				{
 					uint32_t expand_info = *enc_ptr++ + (token << 8);
-					uint32_t back_offset = (uint16_t)(((expand_info >> 5) & 0x3FF) + 1);
-					uint8_t* back_ptr = pDec - back_offset;
+					
 					uint32_t copy_size = (expand_info & 0x1F) + 1;
 					ite_size += copy_size;
+
+					uint32_t back_offset = (uint16_t)(((expand_info >> 5) & 0x3FF) + 1);
+					uint8_t* back_ptr = pDec - back_offset;
 
 					do
 					{
@@ -170,7 +174,7 @@ namespace Seraph
 		}
 
 
-		std::wstring CheckFileType(Rut::RxMem::Auto& amFile)
+		std::wstring GuessFileType(Rut::RxMem::Auto& amFile)
 		{
 			uint16_t signature = *amFile.GetPtr<uint16_t*>();
 			switch (signature)
@@ -233,7 +237,7 @@ namespace Seraph
 				if (entry.m_uiSize == 0) { continue; }
 				raw_buffer.ReadData(ifs_pack, entry.m_uiSize, entry.m_uiFOA);
 				this->Decrypt(raw_buffer, dec_buffer);
-				dec_buffer.SaveData(folder / (NumToStr(L"0x%08x", seq) + this->CheckFileType(dec_buffer)));
+				dec_buffer.SaveData(folder / (NumToStr(L"0x%08x", seq) + this->GuessFileType(dec_buffer)));
 			}
 		}
 	};

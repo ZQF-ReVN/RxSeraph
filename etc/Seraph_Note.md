@@ -94,8 +94,8 @@ struct Seraph_Dat_Entry
 0x14 [>=]
 0x15 [<]
 0x16 [>]
-0x17 [& == 0]
-0x18 [| == 0]
+0x17 [&&]
+0x18 [||]
 0x19 [set_pc]
     19 [dword:new_pc]
 ```
@@ -113,10 +113,12 @@ struct Seraph_Dat_Entry
 0x0F [call script 2 xxx]
     0F 091F0000 -> jmp to script2 ,set pc to 0x1F09
 0x0E [jmp]
-    
+    0E
 0x1F [set packstream param]
     1F 01 E900 020A00050100000009FF
     [byte:op][byte:pack_stream_mod][word:seq][param[1]:seq]
+0x28 [enable_menu_skip]
+    28
 0x48 [font_color_set]
     48 [EXP:color_r][EXP:color_g][EXP:color_b]
 0x49 [font_rect_set]
@@ -159,18 +161,42 @@ struct Seraph_Dat_Entry
     A2
 0xA6 [music_play_]
     A6
+0xA9 [mod_switch_to]
+    A9
 0xAA [music_cd_drive_play]
     AA
 0xAB [music_cd_drive_stop]
     AB
 0xAE [??]
-    [EXP]
+    AE [EXP]
+0xB8 [sav_save]
+    B8 [EXP]
+0xB9 [sav_load]
+    B9 [EXP]
+0xBA [sav_enum]
+    BA [EXP]
+0xBB [env_write]
+    BB
+0xBC [env_read]
+    BC
+0xBE [thumbnail_read_info]
+    BE [EXP:thumbnail_width][EXP:thumbnail_heigh]
+0xBF [thumbnail_create]
+    BF
+0xC0 [thumbnail_draw]
+    C0 [EXP:thumbnail_seq_in_sav_file][EXP:screen_x][EXP:screen_y]
+0xC1 [thumbnail_convert]
+    C1 
 0xD5 [bmp_load]
     D5
 
 ```
 
 ### SecnarioCommand
+
+```
+secnario command begin FF0F091F000047
+```
 
 ```c
 0x00 [push_text]
