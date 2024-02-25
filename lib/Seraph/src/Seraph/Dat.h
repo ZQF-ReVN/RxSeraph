@@ -185,8 +185,17 @@ namespace Seraph
 			case 0x4343: return L".cc"; break; // 'CC'
 			case 0x4243: return L".cb"; break; // 'CB'
 			case 0x4D42: return L".bmp"; break; // 'BM'
-			default: return L".unknow";
+			case 0x0000: // check script
+			{
+				if (*amFile.GetPtr<uint32_t*>() == 0xFF100000)
+				{
+					return L".scn";
+				}
 			}
+			break;
+			}
+
+			return L".unknow";
 		}
 
 		void UnpackScnPac(const std::filesystem::path& phPack)
@@ -206,18 +215,16 @@ namespace Seraph
 				raw_buffer.ReadData(ifs_pack, entry.m_uiSize, entry.m_uiFOA);
 				this->Decrypt(raw_buffer, dec_buffer);
 
-				std::filesystem::path file_save_path = folder / NumToStr(L"%d", seq);
+				Rut::RxMem::Auto& save_buffer = raw_buffer;
 
 				if (seq > 1 && seq < (file_count -3))
 				{
-					size_t dec_size = this->LZ77Decompress(dec_buffer.GetPtr(), raw_buffer.GetPtr());
-					raw_buffer.SetSize(dec_size);
-					raw_buffer.SaveData(file_save_path);
+					size_t dec_size = this->LZ77Decompress(dec_buffer.GetPtr(), save_buffer.GetPtr());
+					save_buffer.SetSize(dec_size);
+
 				}
-				else
-				{
-					dec_buffer.SaveData(file_save_path);
-				}
+
+				save_buffer.SaveData(folder / (NumToStr(L"%d", seq) + this->GuessFileType(save_buffer)));
 			}
 		}
 
