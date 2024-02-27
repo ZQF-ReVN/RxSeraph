@@ -589,7 +589,7 @@ secnario command begin FF0F091F000047
     [BYTE:un] 
 };
 
-0x0A [unknow]
+0x0A [Cursor_Allow_Click] // 逐字显示文本的过程中是否允许点击略过文本显示动画
 {
     [BYTE:op]
     [BYTE:un] 
