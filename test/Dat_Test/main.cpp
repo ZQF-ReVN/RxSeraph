@@ -5,43 +5,43 @@
 #include <Rut/RxStr.h>
 #include <Seraph/Dat.h>
 
-enum SecnarioInstruction
+enum ScenarioInstruction
 {
-	Secnario_Text_Push,
-	Secnario_Text_Format,
-	Secnario_Font_Set_Color_R,
-	Secnario_Font_Set_Color_G,
-	Secnario_Font_Set_Color_B,
-	Secnario_Font_Set_Width,
-	Secnario_Font_Set_Heigh,
-	Secnario_Un7,
-	Secnario_Time_Wait,
-	Secnario_Text_Allow_Color_Green,
-	Secnario_Text_Draw_Layer,
-	Secnario_Text_Allow_Vertical,
-	Secnario_Text_Indent_Add = 0xE,
-	Secnario_Se_Play,
-	Secnario_Cursor_Allow_Click,
-	Secnario_Text_Indent_At,
-	Secnario_Next_Line = 0x14,
-	Secnario_Input_Wait,
-	Secnario_Text_Indent_Flag,
-	Secnario_Next_Page,
-	Secnario_Voice_Play,
-	Secnario_Screen_Shake,
-	Secnario_End = 0xFF
+	Scenario_Text_Push,
+	Scenario_Text_Format,
+	Scenario_Font_Set_Color_R,
+	Scenario_Font_Set_Color_G,
+	Scenario_Font_Set_Color_B,
+	Scenario_Font_Set_Width,
+	Scenario_Font_Set_Heigh,
+	Scenario_Un7,
+	Scenario_Time_Wait,
+	Scenario_Text_Allow_Color_Green,
+	Scenario_Text_Draw_Layer,
+	Scenario_Text_Allow_Vertical,
+	Scenario_Text_Indent_Add = 0xE,
+	Scenario_Se_Play,
+	Scenario_Cursor_Allow_Click,
+	Scenario_Text_Indent_At,
+	Scenario_Next_Line = 0x14,
+	Scenario_Input_Wait,
+	Scenario_Text_Indent_Flag,
+	Scenario_Next_Page,
+	Scenario_Voice_Play,
+	Scenario_Screen_Shake,
+	Scenario_End = 0xFF
 };
 
 
 
-class SecnarioParser
+class ScenarioParser
 {
 public:
 	uint8_t m_ucOP = 0;
 	uint32_t m_nPC = 0;
 	const uint8_t* m_pCode = nullptr;
 
-	SecnarioParser(const uint8_t* const pCode) 
+	ScenarioParser(const uint8_t* const pCode) 
 	{
 		m_pCode = pCode;
 	}
@@ -73,7 +73,7 @@ public:
 	bool NextInstr()
 	{
 		m_ucOP = this->Read<uint8_t>();
-		return m_ucOP != Secnario_End ? true : false;
+		return m_ucOP != Scenario_End ? true : false;
 	}
 
 	uint8_t GetOPCode() const
@@ -85,30 +85,30 @@ public:
 	{
 		switch (this->GetOPCode())
 		{
-		case Secnario_Text_Push: return L"Secnario_Text_Push";
-		case Secnario_Text_Format: return L"Secnario_Text_Format";
-		case Secnario_Font_Set_Color_R: return L"Secnario_Font_Set_Color_R";
-		case Secnario_Font_Set_Color_G: return L"Secnario_Font_Set_Color_G";
-		case Secnario_Font_Set_Color_B: return L"Secnario_Font_Set_Color_B";
-		case Secnario_Font_Set_Width: return L"Secnario_Font_Set_Width";
-		case Secnario_Font_Set_Heigh: return L"Secnario_Font_Set_Heigh";
-		case Secnario_Un7: return L"Secnario_Un7";
-		case Secnario_Time_Wait: return L"Secnario_Time_Wait";
-		case Secnario_Text_Allow_Color_Green: return L"Secnario_Text_Allow_Color_Green";
-		case Secnario_Text_Draw_Layer: return L"Secnario_Text_Draw_Layer";
-		case Secnario_Text_Allow_Vertical: return L"Secnario_Text_Allow_Vertical";
-		case Secnario_Text_Indent_Add: return L"Secnario_Text_Indent_Add";
-		case Secnario_Se_Play: return L"Secnario_Se_Play";
-		case Secnario_Cursor_Allow_Click: return L"Secnario_Cursor_Allow_Click";
-		case Secnario_Text_Indent_At: return L"Secnario_Text_Indent_At";
-		case Secnario_Next_Line: return L"Secnario_Next_Line";
-		case Secnario_Input_Wait: return L"Secnario_Input_Wait";
-		case Secnario_Text_Indent_Flag: return L"Secnario_Text_Indent_Flag";
-		case Secnario_Next_Page: return L"Secnario_Next_Page";
-		case Secnario_Voice_Play: return L"Secnario_Voice_Play";
-		case Secnario_Screen_Shake: return L"Secnario_Screen_Shake";
-		case Secnario_End: return L"Secnario_End";
-		default: throw std::runtime_error("SecnarioInstr::GetInstrName: Error Command!");
+		case Scenario_Text_Push: return L"Scenario_Text_Push";
+		case Scenario_Text_Format: return L"Scenario_Text_Format";
+		case Scenario_Font_Set_Color_R: return L"Scenario_Font_Set_Color_R";
+		case Scenario_Font_Set_Color_G: return L"Scenario_Font_Set_Color_G";
+		case Scenario_Font_Set_Color_B: return L"Scenario_Font_Set_Color_B";
+		case Scenario_Font_Set_Width: return L"Scenario_Font_Set_Width";
+		case Scenario_Font_Set_Heigh: return L"Scenario_Font_Set_Heigh";
+		case Scenario_Un7: return L"Scenario_Un7";
+		case Scenario_Time_Wait: return L"Scenario_Time_Wait";
+		case Scenario_Text_Allow_Color_Green: return L"Scenario_Text_Allow_Color_Green";
+		case Scenario_Text_Draw_Layer: return L"Scenario_Text_Draw_Layer";
+		case Scenario_Text_Allow_Vertical: return L"Scenario_Text_Allow_Vertical";
+		case Scenario_Text_Indent_Add: return L"Scenario_Text_Indent_Add";
+		case Scenario_Se_Play: return L"Scenario_Se_Play";
+		case Scenario_Cursor_Allow_Click: return L"Scenario_Cursor_Allow_Click";
+		case Scenario_Text_Indent_At: return L"Scenario_Text_Indent_At";
+		case Scenario_Next_Line: return L"Scenario_Next_Line";
+		case Scenario_Input_Wait: return L"Scenario_Input_Wait";
+		case Scenario_Text_Indent_Flag: return L"Scenario_Text_Indent_Flag";
+		case Scenario_Next_Page: return L"Scenario_Next_Page";
+		case Scenario_Voice_Play: return L"Scenario_Voice_Play";
+		case Scenario_Screen_Shake: return L"Scenario_Screen_Shake";
+		case Scenario_End: return L"Scenario_End";
+		default: throw std::runtime_error("ScenarioInstr::GetInstrName: Error Command!");
 		}
 	}
 
@@ -118,47 +118,47 @@ public:
 
 		switch (this->GetOPCode())
 		{
-		case Secnario_Text_Push:
+		case Scenario_Text_Push:
 		{
 			param[L"type"] = L"Str";
 			param[L"value"] = this->Read<std::wstring>();
 		}
 		break;
 
-		case Secnario_Text_Format:
+		case Scenario_Text_Format:
 		{
 			throw std::runtime_error("Unknow OPCode!");
 		}
 		break;
 
-		case Secnario_Font_Set_Color_R:
-		case Secnario_Font_Set_Color_G:
-		case Secnario_Font_Set_Color_B:
-		case Secnario_Font_Set_Width:
-		case Secnario_Font_Set_Heigh:
-		case Secnario_Un7:
-		case Secnario_Time_Wait:
-		case Secnario_Text_Allow_Color_Green:
-		case Secnario_Text_Draw_Layer:
-		case Secnario_Text_Allow_Vertical:
-		case Secnario_Text_Indent_Add:
-		case Secnario_Se_Play:
-		case Secnario_Cursor_Allow_Click:
-		case Secnario_Text_Indent_At:
-		case Secnario_Screen_Shake:
+		case Scenario_Font_Set_Color_R:
+		case Scenario_Font_Set_Color_G:
+		case Scenario_Font_Set_Color_B:
+		case Scenario_Font_Set_Width:
+		case Scenario_Font_Set_Heigh:
+		case Scenario_Un7:
+		case Scenario_Time_Wait:
+		case Scenario_Text_Allow_Color_Green:
+		case Scenario_Text_Draw_Layer:
+		case Scenario_Text_Allow_Vertical:
+		case Scenario_Text_Indent_Add:
+		case Scenario_Se_Play:
+		case Scenario_Cursor_Allow_Click:
+		case Scenario_Text_Indent_At:
+		case Scenario_Screen_Shake:
 		{
 			param[L"type"] = L"Byte";
 			param[L"value"] = this->Read<uint8_t>();
 		}
 		break;
 
-		case Secnario_Next_Line:
-		case Secnario_Input_Wait:
-		case Secnario_Text_Indent_Flag:
-		case Secnario_Next_Page:
+		case Scenario_Next_Line:
+		case Scenario_Input_Wait:
+		case Scenario_Text_Indent_Flag:
+		case Scenario_Next_Page:
 			break;
 
-		case Secnario_Voice_Play:
+		case Scenario_Voice_Play:
 		{
 			param[L"type"] = L"Byte";
 			param[L"value"] = this->Read<int>();
@@ -222,7 +222,7 @@ int main()
 			0x0B, 0x08, 0x0B, 0x15, 0x08, 0x0B, 0xFF, 0x2C, 0x00, 0x02, 0x0B, 0x00, 0xFF
 	};
 
-	SecnarioParser parse(test_code);
+	ScenarioParser parse(test_code);
 	parse.Parse();
 
 

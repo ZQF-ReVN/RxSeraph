@@ -299,7 +299,7 @@ struct Seraph_Music_FileName_Table
     [BYTE:op]
 };
 
-0x47 [switch_to_secnario_command_func]
+0x47 [switch_to_scenario_command_func]
 {
     [BYTE:op]
 };
@@ -521,10 +521,10 @@ struct Seraph_Music_FileName_Table
 };
 ```
 
-### SecnarioCommand
+### ScenarioCommand
 
 ```
-secnario command begin FF0F091F000047
+scenario command begin FF0F091F000047
 ```
 
 ```c
@@ -583,28 +583,28 @@ secnario command begin FF0F091F000047
 };
 // 08 0B -> wait (0xB * 10) ms
 
-0x09 [unknow_draw_text_flag]
+0x09 [text_allow_green_color]
 {
     [BYTE:op]
     [BYTE:un] 
 };
 
-0x0A [Cursor_Allow_Click] // 逐字显示文本的过程中是否允许点击略过文本显示动画
+0x0A [text_draw_layer] 
+{
+    [BYTE:op]
+    [BYTE:layer] 
+};
+
+0x0B [text_allow_vertical]
 {
     [BYTE:op]
     [BYTE:un] 
 };
 
-0x0B [unknow_draw_text_flag]
+0x0E [text_indent_add]
 {
     [BYTE:op]
-    [BYTE:un] 
-};
-
-0x0E [unknow]
-{
-    [BYTE:op]
-    [BYTE:un] 
+    [BYTE:len] // pixel = len * 8 
 };
 
 0x0F [play_se]
@@ -613,16 +613,16 @@ secnario command begin FF0F091F000047
     [BYTE:sound_seq] 
 };
 
-0x10 [unknow]
+0x10 [Cursor_Allow_Click] // 逐字显示文本的过程中是否允许点击略过文本显示动画
 {
     [BYTE:op]
     [BYTE:uj] 
 };
 
-0x11 [unknow]
+0x11 [Text_Indent_At]
 {
     [BYTE:op]
-    [BYTE:un] 
+    [BYTE:pos] 
 };
 
 0x14 [new_line]
@@ -635,7 +635,7 @@ secnario command begin FF0F091F000047
     [BYTE:op]
 };
 
-0x16 [text_indent]
+0x16 [text_indent_flag]
 {
     [BYTE:op]
 };
@@ -666,9 +666,9 @@ secnario command begin FF0F091F000047
 
 ## 文本替换思路
 
-这玩意又是文本夹在代码中间的，分析了vm发现内部有相对或绝对的跳转，肯定是不能直接变换文本长度了。不过找到个SystemCommand的op:0x0A，是直接跳转的指令，也就是直接设置pc，所以理论上也可以使用和[Valkyria](https://github.com/Dir-A/Valkyria_Tools)差不多的思路，即，用vm的jmp指令跳出来，然后改文本再跳回去，有点类似于inline hook的样子，只不过这个是利用vm自己的指令，而且这个引擎的文本控制还是单独指令集的，即，SystemCommand有个指令可以把当前vm解析的指令模式切换到文本控制的指令集SecnarioCommand，而且这个指令集指令很少，基本分析完了，所以只要扫描SystemCommand切换到SecnarioCommand的指令，定位到SecnarioCommand的代码块（切换指令其后就是SecnarioCommand的代码块,扫描的特征码FF0F091F000047，最后这个47就是切换模式的op，同时SecnarioCommand的代码块以0xFF指令退出，也就是代码块的结束），然后写个jmp指令跳到文件末尾，解析SecnarioCommand的代码块就可以随便插入文本了，在代码块结束的位置跳回去就好了。主要是因为文本控制的op很少，分析省时间，完整的op很多，分析要太久，熬不住。
+这玩意又是文本夹在代码中间的，分析了vm发现内部有相对或绝对的跳转，肯定是不能直接变换文本长度了。不过找到个SystemCommand的op:0x0A，是直接跳转的指令，也就是直接设置pc，所以理论上也可以使用和[Valkyria](https://github.com/Dir-A/Valkyria_Tools)差不多的思路，即，用vm的jmp指令跳出来，然后改文本再跳回去，有点类似于inline hook的样子，只不过这个是利用vm自己的指令，而且这个引擎的文本控制还是单独指令集的，即，SystemCommand有个指令可以把当前vm解析的指令模式切换到文本控制的指令集ScenarioCommand，而且这个指令集指令很少，基本分析完了，所以只要扫描SystemCommand切换到ScenarioCommand的指令，定位到ScenarioCommand的代码块（切换指令其后就是ScenarioCommand的代码块,扫描的特征码FF0F091F000047，最后这个47就是切换模式的op，同时ScenarioCommand的代码块以0xFF指令退出，也就是代码块的结束），然后写个jmp指令跳到文件末尾，解析ScenarioCommand的代码块就可以随便插入文本了，在代码块结束的位置跳回去就好了。主要是因为文本控制的op很少，分析省时间，完整的op很多，分析要太久，熬不住。
 
-不过要注意的是，这样是整个代码块的替换，但会不会有指令往代码块中间跳？很难讲，不过往中间跳其实也没什么问题，就是会造成文本变回原来的，真有的话，其实也可以很轻松定位到跳转的指令。那往代码块开头跳的情况呢？理论上不会，如果它全部进入SecnarioCommand的代码块的op都是用47的话，当然要是真有的话，我们就要注意不要去覆盖代码块的内容，特别是开头的地方，至少保证引擎不要崩溃，不然调试会很麻烦。
+不过要注意的是，这样是整个代码块的替换，但会不会有指令往代码块中间跳？很难讲，不过往中间跳其实也没什么问题，就是会造成文本变回原来的，真有的话，其实也可以很轻松定位到跳转的指令。那往代码块开头跳的情况呢？理论上不会，如果它全部进入ScenarioCommand的代码块的op都是用47的话，当然要是真有的话，我们就要注意不要去覆盖代码块的内容，特别是开头的地方，至少保证引擎不要崩溃，不然调试会很麻烦。
 
 
 
