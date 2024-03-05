@@ -3,7 +3,9 @@ project(Seraph)
 
 # Set Source File Path
 list(APPEND "${PROJECT_NAME}_SRC_FILE" 
-	"src/Seraph/Dat.cpp")
+	"src/Seraph/Dat.cpp"
+	"src/Seraph/Script.cpp"
+	"src/Seraph/Script_Scenario.cpp")
 
 # Source File Only x32
 if (CMAKE_SIZEOF_VOID_P EQUAL 4)
