@@ -93,10 +93,91 @@ struct Seraph_Music_FileName_Table
 ### ExpressionCommand
 
 ```c
-0x05 [dword]
-    05 [dword]
-0x07 [random_dword]
-    07 [dword:retain]
+// 0x00 
+struct get_static_status_0
+{
+    [BYTE:op]
+    [BYTE:seq]
+};
+
+// 0x01 
+struct check_static_status_1
+{
+    [BYTE:op]
+    [BYTE:type]
+    if{type==1}
+    {
+        [EXP:seq]
+    }
+    else
+    {
+        [WORD:seq]
+        [BYTE:un]
+    }
+};
+
+// 0x02 
+struct get_static_status_2_type0
+{
+    [BYTE:op]
+    [WORD:seq]
+};
+
+// 0x03 
+struct get_static_status_2_type1
+{
+    [BYTE:op]
+    [WORD:seq]
+    [EXP:un]
+};
+
+// 0x04
+struct get_static_status_2_type2
+{
+    [BYTE:op]
+    [WORD:un]
+    [WORD:un]
+    [EXP:un]
+    [WORD:un]
+    [EXP:un]
+};
+    
+// 0x05
+struct get_dword
+{
+    [BYTE:op]
+    [DWORD:val]
+};
+
+// 0x06
+struct read_res
+{
+    [BYTE:op]
+    [WORD:res_table_seq]
+    [WORD:size]
+    [EXP:size]
+    [BYTE:read_type]
+    [WORD:res_base]
+    [WORD:type]
+};
+
+// 0x07 
+struct get_random_val
+{
+    [BYTE:op]
+    [DWORD:retain]
+};
+
+// 0x10
+struct check_status
+{
+    [BYTE:op]
+    if{status == true} 
+    {
+        pc += 5
+    }
+};
+
 0x08 [+]
 0x09 [-]
 0x0A [*]
@@ -113,8 +194,13 @@ struct Seraph_Music_FileName_Table
 0x16 [>]
 0x17 [&&]
 0x18 [||]
-0x19 [set_pc]
-    19 [dword:new_pc]
+
+// 0x19
+struct set_pc
+{
+    [BYTE:op]
+    [DWORD:pc]
+};
 ```
 
 ### SystemCommand

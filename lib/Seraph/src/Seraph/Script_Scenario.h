@@ -81,7 +81,7 @@ namespace Seraph::Script
 			char* str_ptr = (char*)(m_spCode.data() + m_nPC);
 			size_t str_len = strlen(str_ptr);
 			m_nPC += str_len + 1;
-			return { str_ptr ,str_len };
+			return std::string{ str_ptr ,str_len };
 		}
 		else
 		{
@@ -177,7 +177,7 @@ namespace Seraph::Script
 		case Scenario_Input_Wait:
 		case Scenario_Text_Indent_Flag:
 		case Scenario_Next_Page:
-			break;
+		break;
 
 		case Scenario_Voice_Play:
 		{
