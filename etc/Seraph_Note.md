@@ -614,135 +614,162 @@ scenario command begin FF0F091F000047
 ```
 
 ```c
-0x00 [push_text]
+//0x00
+struct text_push
 {
     [BYTE:op]
     char aMsg[??] // with null char
 };
     
-0x01 [format_text]
+// 0x01
+struct text_format
 {
     [BYTE:op]
     [EXP:un]
 };
 
-0x02 [set_font_color_r]
+// 0x02
+struct font_set_color_r
 {
     [BYTE:op]
     [BYTE:color_r]
 };
 
-0x03 [set_font_color_g]
+// 0x03
+struct font_set_color_g
 {
     [BYTE:op]
     [BYTE:color_g]
 };
 
-0x04 [set_font_color_b]
+// 0x04
+struct font_set_color_b
 {
     [BYTE:op]
     [BYTE:color_b]
 };
 
-0x05 [set_font_width]
+// 0x05
+struct font_set_width
 {
     [BYTE:op]
     [BYTE:font_width]
 };
 
-0x06 [set_font_heigh]
+// 0x06 
+struct font_set_heigh
 {
     [BYTE:op]
     [BYTE:font_heigh]
 };
 
-0x07 [not_used]
+// 0x07 
+struct not_used
 {
     [BYTE:op]
     [BYTE:un]
 };
 
-0x08 [wait time]
+// 0x08
+// 08 0B -> wait (0xB * 10) ms
+struct time_wait
 {
     [BYTE:op]
     [BYTE:time] 
 };
-// 08 0B -> wait (0xB * 10) ms
 
-0x09 [text_allow_green_color]
+// 0x09 
+struct text_allow_color_green
 {
     [BYTE:op]
     [BYTE:un] 
 };
 
-0x0A [text_draw_layer] 
+// 0x0A
+struct text_draw_layer 
 {
     [BYTE:op]
     [BYTE:layer] 
 };
 
-0x0B [text_allow_vertical]
+// 0x0B 
+struct text_allow_vertical
 {
     [BYTE:op]
     [BYTE:un] 
 };
 
-0x0E [text_indent_add]
+// 0x0E 
+struct text_indent_add
 {
     [BYTE:op]
     [BYTE:len] // pixel = len * 8 
 };
 
-0x0F [play_se]
+// 0x0F 
+struct se_play
 {
     [BYTE:op]
     [BYTE:sound_seq] 
 };
 
-0x10 [Cursor_Allow_Click] // 逐字显示文本的过程中是否允许点击略过文本显示动画
+// 0x10
+// 逐字显示文本的过程中是否允许点击略过文本显示动画
+struct cursor_allow_click
 {
     [BYTE:op]
     [BYTE:uj] 
 };
 
-0x11 [Text_Indent_At]
+// 0x11 
+struct text_indent_at
 {
     [BYTE:op]
     [BYTE:pos] 
 };
 
-0x14 [new_line]
+// 0x14 
+struct next_line
 {
     [BYTE:op]
 };
 
-0x15 [render text and wait input]
+// 0x15
+// render text and wait input
+struct input_wait
 {
     [BYTE:op]
 };
 
-0x16 [text_indent_flag]
+
+// 0x16 
+struct text_indent_flag
 {
     [BYTE:op]
 };
 
-0x17 [next_page]
+// 0x17 
+struct next_page
 {
     [BYTE:op]
 };
 
-0x18 [play_voice]
+// 0x18 
+struct voice_play
 {
     [BYTE:op]
     [DWORD:voice_file_seq]
 };
 
-0x19 [shake_screen]
+// 0x19 
+struct screen_shake
 {
     [BYTE:op]
 };
 
-0xFF [end] // end of code block. back to SystemCommand parse mode
+// 0xFF
+// end of code block. back to SystemCommand parse mode
+struct end
 {
     [BYTE:op]
 };
