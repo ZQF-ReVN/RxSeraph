@@ -27,7 +27,6 @@ struct Seraph_Dat_Segment_Entry
     uint32_t uiFileCount;
 };
 
-// ArchPac.dat: 0x05EBB40D
 struct Seraph_Dat_Sengmet_HDR
 {
     uint32_t uiSegmentCount;
@@ -89,6 +88,8 @@ struct Seraph_Music_FileName_Table
 ```
 
 ## Command
+
+Based on [2006] [雛鳥の堕ちる音](https://vndb.org/v25450) 
 
 ### ExpressionCommand
 
@@ -815,3 +816,17 @@ C:\Hinadori\Seraph.exe Hinadori 雛鳥の堕ちる音
 `0x00412CE1`
 
 继续往下来到一个cd检测函数，该函数内部主要调用 `0x004129F0` 这个函数，这个函数会循环枚举 a b c d e ... 等盘符来检查盘符名是否为游戏启动时输入的英文名参数，如果检测失败则会提示重试
+
+
+
+## Seraph Engine Games
+
+|    Date    |               Developer                |                           Title                           | Type | ArchPac Index Offset |
+| :--------: | :------------------------------------: | :-------------------------------------------------------: | :--: | :------------------: |
+| 2009-08-16 | [Digital Lover](https://vndb.org/p881) | [School Captain 会長候補はご立腹](https://vndb.org/v2476) | PKG  |     `0x08FC6E04`     |
+| 2009-12-31 | [Digital Lover](https://vndb.org/p881) | [School Captain 2 会王をねらえ!](https://vndb.org/v3212)  | PKG  |     `0x02AFD433`     |
+| 2010-08-15 | [Digital Lover](https://vndb.org/p881) |         [制服楽園EXTEND](https://vndb.org/v5053)          | PKG  |     `0x0523338A`     |
+| 2006-12-31 |     [Ex12](https://vndb.org/p1208)     |         [雛鳥の堕ちる音](https://vndb.org/v25450)         | PKG  |     `0x05EBB40D`     |
+|            |                                        |                                                           |      |                      |
+|            |                                        |                                                           |      |                      |
+
