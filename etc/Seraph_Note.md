@@ -821,12 +821,12 @@ C:\Hinadori\Seraph.exe Hinadori 雛鳥の堕ちる音
 
 ## Seraph Engine Games
 
-|    Date    |               Developer                |                           Title                           | Type | ArchPac Index Offset |
-| :--------: | :------------------------------------: | :-------------------------------------------------------: | :--: | :------------------: |
-| 2009-08-16 | [Digital Lover](https://vndb.org/p881) | [School Captain 会長候補はご立腹](https://vndb.org/v2476) | PKG  |     `0x08FC6E04`     |
-| 2009-12-31 | [Digital Lover](https://vndb.org/p881) | [School Captain 2 会王をねらえ!](https://vndb.org/v3212)  | PKG  |     `0x02AFD433`     |
-| 2010-08-15 | [Digital Lover](https://vndb.org/p881) |         [制服楽園EXTEND](https://vndb.org/v5053)          | PKG  |     `0x0523338A`     |
-| 2006-12-31 |     [Ex12](https://vndb.org/p1208)     |         [雛鳥の堕ちる音](https://vndb.org/v25450)         | PKG  |     `0x05EBB40D`     |
-|            |                                        |                                                           |      |                      |
-|            |                                        |                                                           |      |                      |
+|    Date    |               Developer                |                           Title                           | Type | ArchPac Index Offset | Version |
+| :--------: | :------------------------------------: | :-------------------------------------------------------: | :--: | :------------------: | :-----: |
+| 2009-08-16 | [Digital Lover](https://vndb.org/p881) | [School Captain 会長候補はご立腹](https://vndb.org/v2476) | PKG  |     `0x08FC6E04`     |   V3    |
+| 2009-12-31 | [Digital Lover](https://vndb.org/p881) | [School Captain 2 会王をねらえ!](https://vndb.org/v3212)  | PKG  |     `0x02AFD433`     |   V3    |
+| 2010-08-15 | [Digital Lover](https://vndb.org/p881) |         [制服楽園EXTEND](https://vndb.org/v5053)          | PKG  |     `0x0523338A`     |   V3    |
+| 2006-12-31 |     [Ex12](https://vndb.org/p1208)     |         [雛鳥の堕ちる音](https://vndb.org/v25450)         | PKG  |     `0x05EBB40D`     |   V2    |
+| 2000-07-14 |    [Ather](https://vndb.org/p1041)     |          [好きだよっ！](https://vndb.org/v4923)           | PKG  |                      |   V1    |
+|            |                                        |                                                           |      |                      |         |
 

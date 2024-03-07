@@ -35,7 +35,6 @@ namespace Seraph
 
 		}
 
-
 		void ReadIndexBased(Rut::RxFile::Binary& ifsPack, uint32_t uiDataBegOffset, uint32_t uiFileCount)
 		{
 			uint32_t first_offset = ifsPack.Get<uint32_t>() + uiDataBegOffset;
@@ -90,51 +89,6 @@ namespace Seraph
 			}
 		}
 
-
-		size_t LZ77Decompress(uint8_t* pRaw, uint8_t* pDec)
-		{
-			size_t ite_size = 0;
-			size_t dec_size = (size_t)(*((uint32_t*)pRaw));
-
-			uint8_t* dec_ptr = pDec;
-			uint8_t* enc_ptr = pRaw + 4;
-
-			if (dec_size == 0) { return 0; }
-
-			do
-			{
-				uint8_t token = *enc_ptr++;
-				if (token & 0x80) // expand
-				{
-					uint32_t expand_info = *enc_ptr++ + (token << 8);
-					
-					uint32_t copy_size = (expand_info & 0x1F) + 1;
-					ite_size += copy_size;
-
-					uint32_t back_offset = (uint16_t)(((expand_info >> 5) & 0x3FF) + 1);
-					uint8_t* back_ptr = pDec - back_offset;
-
-					do
-					{
-						*pDec++ = *back_ptr++;
-					} while (--copy_size);
-				}
-				else // just copy 
-				{
-					uint32_t copy_size = (token & 0x7F) + 1;
-					ite_size += copy_size;
-
-					do
-					{
-						*pDec++ = *enc_ptr++;
-					} while (--copy_size);
-				}
-
-			} while (ite_size < dec_size);
-
-			return ite_size;
-		}
-
 		void ZLIBDecompress(Rut::RxMem::Auto& amBuffer, std::span<uint8_t> spData)
 		{
 			uLong compressed_size = (uLong)spData.size();
@@ -159,24 +113,28 @@ namespace Seraph
 
 		void Decrypt(Rut::RxMem::Auto& amEncBuffer, Rut::RxMem::Auto& amDecBuffer)
 		{
-			uint32_t flag = *(amEncBuffer.GetPtr<uint32_t*>() + 0);
+			auto view = amEncBuffer.GetView();
 
-			if (flag == 1)
+			uint32_t flag0 = view.Read<uint32_t>();
+			uint8_t flag1 = view.Read<uint8_t>();
+
+			if (flag0 == 1 && (flag1 == 0x78))
 			{
-				uint32_t compressed_size = amEncBuffer.GetSize() - sizeof(flag);
-				uint8_t* compressed_data_ptr = amEncBuffer.GetPtr() + sizeof(flag);
+				uint32_t compressed_size = amEncBuffer.GetSize() - sizeof(flag0);
+				uint8_t* compressed_data_ptr = amEncBuffer.GetPtr() + sizeof(flag0);
 				this->ZLIBDecompress(amDecBuffer, { compressed_data_ptr, compressed_size });
 			}
 			else
 			{
-				throw std::runtime_error("Seraph::Dat::Decrypt: Unknow Format!");
+				std::swap(amEncBuffer, amDecBuffer);
 			}
 		}
 
 
 		std::wstring GuessFileType(Rut::RxMem::Auto& amFile)
 		{
-			uint16_t signature = *amFile.GetPtr<uint16_t*>();
+			uint16_t signature = amFile.GetView().Read<uint16_t>();
+
 			switch (signature)
 			{
 			case 0x5843: return L".cx"; break; // 'CX'
@@ -190,37 +148,6 @@ namespace Seraph
 			return L".unknow";
 		}
 
-		void UnpackScnPac(const std::filesystem::path& phPack)
-		{
-			Rut::RxFile::Binary ifs_pack{ phPack, Rut::RIO_READ };
-			this->ReadIndex(phPack);
-
-			std::filesystem::path folder = phPack.stem();
-			std::filesystem::create_directory(folder);
-
-			Rut::RxMem::Auto raw_buffer(0x64000);
-			Rut::RxMem::Auto dec_buffer(0x64000);
-
-			size_t file_count = m_vcIndex.size();
-			for (auto [seq, entry] : std::views::enumerate(m_vcIndex))
-			{
-				raw_buffer.ReadData(ifs_pack, entry.m_uiSize, entry.m_uiFOA);
-				this->Decrypt(raw_buffer, dec_buffer);
-
-				if (seq > 1 && seq < (file_count -3))
-				{
-					Rut::RxMem::Auto& tmp_buffer = raw_buffer;
-					size_t dec_size = this->LZ77Decompress(dec_buffer.GetPtr(), tmp_buffer.GetPtr());
-					tmp_buffer.SetSize(dec_size);
-					tmp_buffer.SaveData(folder / (NumToStr(L"%d", seq) + this->GuessFileType(dec_buffer)));
-				}
-				else
-				{
-					dec_buffer.SaveData(folder / (NumToStr(L"%d", seq) + this->GuessFileType(dec_buffer)));
-				}
-			}
-		}
-
 		void Unpack(const std::filesystem::path& phPack, uint32_t uiIndexOffset = 0)
 		{
 			this->ReadIndex(phPack, uiIndexOffset);
@@ -230,14 +157,14 @@ namespace Seraph
 
 			Rut::RxFile::Binary ifs_pack{ phPack, Rut::RIO_READ };
 			
-			Rut::RxMem::Auto raw_buffer(0x64000);
-			Rut::RxMem::Auto dec_buffer(0x64000);
+			Rut::RxMem::Auto raw_buffer;
+			Rut::RxMem::Auto dec_buffer;
 			for (auto [seq, entry] : std::views::enumerate(m_vcIndex))
 			{
 				if (entry.m_uiSize == 0) { continue; }
 				raw_buffer.ReadData(ifs_pack, entry.m_uiSize, entry.m_uiFOA);
 				this->Decrypt(raw_buffer, dec_buffer);
-				dec_buffer.SaveData(folder / (NumToStr(L"0x%08x", seq) + this->GuessFileType(dec_buffer)));
+				dec_buffer.SaveData(folder / (NumToStr(L"%08d", seq) + this->GuessFileType(dec_buffer)));
 			}
 		}
 	};

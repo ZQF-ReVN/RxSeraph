@@ -3,6 +3,7 @@
 #include <memory>
 #include <ranges>
 
+#include <Rut/RxMem.h>
 #include <Rut/RxStr.h>
 #include <Rut/RxJson.h>
 

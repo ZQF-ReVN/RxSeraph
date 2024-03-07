@@ -37,6 +37,6 @@ namespace Seraph::VFS
 
 	void SetHook()
 	{
-		Rut::RxHook::Detours::AttrachDirectly(&sg_fnScriptLoad, ScriptLoad_Hook);
+		Rut::RxHook::Detours::AttachDirectly(&sg_fnScriptLoad, ScriptLoad_Hook);
 	}
 }

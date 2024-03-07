@@ -4,7 +4,7 @@
 #include <Seraph/Script.h>
 
 
-int main()
+static void TestParse()
 {
 	Rut::RxMem::Auto script_mem;
 	std::filesystem::path save_folder = L"json/";
@@ -12,10 +12,15 @@ int main()
 	for (const auto& path_entry : std::filesystem::directory_iterator("scn/"))
 	{
 		if (path_entry.is_regular_file() == false) { continue; }
-		
+
 		script_mem.LoadFile(path_entry);
 		Seraph::Script::Parser script(script_mem);
 		Rut::RxJson::JValue codes = script.Parse();
 		Rut::RxJson::Parser::Save(codes, save_folder / path_entry.path().filename().replace_extension(L".json"), true);
 	}
+}
+
+int main()
+{
+
 }
