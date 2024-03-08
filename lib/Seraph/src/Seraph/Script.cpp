@@ -1,7 +1,7 @@
 #include "Script.h"
 
 
-namespace Seraph::Script
+namespace Seraph::Script::V2
 {
 
 }

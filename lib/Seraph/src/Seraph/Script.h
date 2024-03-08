@@ -8,7 +8,7 @@
 #include <Rut/RxJson.h>
 
 
-namespace Seraph::Script
+namespace Seraph::Script::V2
 {
 	enum ScenarioInstruction
 	{
@@ -224,33 +224,33 @@ namespace Seraph::Script
 	{
 		switch (this->GetOPCode())
 		{
-		case Seraph::Script::Expression_Stack0_Get: return L"Expression_Stack0_Get";
-		case Seraph::Script::Expression_Stack1_Check: return L"Expression_Stack1_Check";
-		case Seraph::Script::Expression_Stack2_Get_Type0: return L"Expression_Stack2_Get_Type0";
-		case Seraph::Script::Expression_Stack2_Get_Type1: return L"Expression_Stack2_Get_Type1";
-		case Seraph::Script::Expression_Stack2_Get_Type2: return L"Expression_Stack2_Get_Type2";
-		case Seraph::Script::Expression_Dword_Get: return L"Expression_Dword_Get";
-		case Seraph::Script::Expression_Res_Get: return L"Expression_Res_Get";
-		case Seraph::Script::Expression_Random_Val_Get: return L"Expression_Random_Val_Get";
-		case Seraph::Script::Expression_Addition: return L"Expression_Addition";
-		case Seraph::Script::Expression_Subtraction: return L"Expression_Subtraction";
-		case Seraph::Script::Expression_Multiplication: return L"Expression_Multiplication";
-		case Seraph::Script::Expression_Division: return L"Expression_Division";
-		case Seraph::Script::Expression_Modulus: return L"Expression_Modulus";
-		case Seraph::Script::Expression_AND: return L"Expression_AND";
-		case Seraph::Script::Expression_OR: return L"Expression_OR";
-		case Seraph::Script::Expression_XOR: return L"Expression_XOR";
-		case Seraph::Script::Expression_IF: return L"Expression_IF";
-		case Seraph::Script::Expression_Equal: return L"Expression_Equal";
-		case Seraph::Script::Expression_NotEqual: return L"Expression_NotEqual";
-		case Seraph::Script::Expression_LessThanEqual: return L"Expression_LessThanEqual";
-		case Seraph::Script::Expression_GreaterThanEqual: return L"Expression_GreaterThanEqual";
-		case Seraph::Script::Expression_LessThan: return L"Expression_LessThan";
-		case Seraph::Script::Expression_GreaterThan: return L"Expression_GreaterThan";
-		case Seraph::Script::Expression_LogicalAND: return L"Expression_LogicalAND";
-		case Seraph::Script::Expression_LogicalOR: return L"Expression_LogicalOR";
-		case Seraph::Script::Expression_PC_Set: return L"Expression_PC_Set";
-		case Seraph::Script::Expression_End: return L"Expression_End";
+		case Seraph::Script::V2::Expression_Stack0_Get: return L"Expression_Stack0_Get";
+		case Seraph::Script::V2::Expression_Stack1_Check: return L"Expression_Stack1_Check";
+		case Seraph::Script::V2::Expression_Stack2_Get_Type0: return L"Expression_Stack2_Get_Type0";
+		case Seraph::Script::V2::Expression_Stack2_Get_Type1: return L"Expression_Stack2_Get_Type1";
+		case Seraph::Script::V2::Expression_Stack2_Get_Type2: return L"Expression_Stack2_Get_Type2";
+		case Seraph::Script::V2::Expression_Dword_Get: return L"Expression_Dword_Get";
+		case Seraph::Script::V2::Expression_Res_Get: return L"Expression_Res_Get";
+		case Seraph::Script::V2::Expression_Random_Val_Get: return L"Expression_Random_Val_Get";
+		case Seraph::Script::V2::Expression_Addition: return L"Expression_Addition";
+		case Seraph::Script::V2::Expression_Subtraction: return L"Expression_Subtraction";
+		case Seraph::Script::V2::Expression_Multiplication: return L"Expression_Multiplication";
+		case Seraph::Script::V2::Expression_Division: return L"Expression_Division";
+		case Seraph::Script::V2::Expression_Modulus: return L"Expression_Modulus";
+		case Seraph::Script::V2::Expression_AND: return L"Expression_AND";
+		case Seraph::Script::V2::Expression_OR: return L"Expression_OR";
+		case Seraph::Script::V2::Expression_XOR: return L"Expression_XOR";
+		case Seraph::Script::V2::Expression_IF: return L"Expression_IF";
+		case Seraph::Script::V2::Expression_Equal: return L"Expression_Equal";
+		case Seraph::Script::V2::Expression_NotEqual: return L"Expression_NotEqual";
+		case Seraph::Script::V2::Expression_LessThanEqual: return L"Expression_LessThanEqual";
+		case Seraph::Script::V2::Expression_GreaterThanEqual: return L"Expression_GreaterThanEqual";
+		case Seraph::Script::V2::Expression_LessThan: return L"Expression_LessThan";
+		case Seraph::Script::V2::Expression_GreaterThan: return L"Expression_GreaterThan";
+		case Seraph::Script::V2::Expression_LogicalAND: return L"Expression_LogicalAND";
+		case Seraph::Script::V2::Expression_LogicalOR: return L"Expression_LogicalOR";
+		case Seraph::Script::V2::Expression_PC_Set: return L"Expression_PC_Set";
+		case Seraph::Script::V2::Expression_End: return L"Expression_End";
 		default: throw std::runtime_error("Parser::ParseExpressionInstrName: Error!");
 		};
 	}
@@ -317,13 +317,13 @@ namespace Seraph::Script
 
 		switch (this->GetOPCode())
 		{
-		case Seraph::Script::Expression_Stack0_Get:
+		case Seraph::Script::V2::Expression_Stack0_Get:
 		{
 			param[L"seq"] = this->Read<uint8_t>();
 		}
 		break;
 
-		case Seraph::Script::Expression_Stack1_Check:
+		case Seraph::Script::V2::Expression_Stack1_Check:
 		{
 			uint8_t type = this->Read<uint8_t>();
 			param[L"flag"] = type;
@@ -340,20 +340,20 @@ namespace Seraph::Script
 		}
 		break;
 
-		case Seraph::Script::Expression_Stack2_Get_Type0:
+		case Seraph::Script::V2::Expression_Stack2_Get_Type0:
 		{
 			param[L"seq"] = this->Read<uint16_t>();
 		}
 		break;
 
-		case Seraph::Script::Expression_Stack2_Get_Type1:
+		case Seraph::Script::V2::Expression_Stack2_Get_Type1:
 		{
 			param[L"seq"] = this->Read<uint16_t>();
 			param[L"exp"] = this->ParseExpression();
 		}
 		break;
 
-		case Seraph::Script::Expression_Stack2_Get_Type2:
+		case Seraph::Script::V2::Expression_Stack2_Get_Type2:
 		{
 			param[L"un0"] = this->Read<uint16_t>();
 			param[L"un1"] = this->Read<uint16_t>();
@@ -363,13 +363,13 @@ namespace Seraph::Script
 		}
 		break;
 
-		case Seraph::Script::Expression_Dword_Get:
+		case Seraph::Script::V2::Expression_Dword_Get:
 		{
 			param[L"val"] = this->Read<int>();
 		}
 		break;
 
-		case Seraph::Script::Expression_Res_Get:
+		case Seraph::Script::V2::Expression_Res_Get:
 		{
 			param[L"res_table_seq"] = this->Read<uint16_t>();
 			param[L"size0"] = this->Read<uint16_t>();
@@ -380,46 +380,46 @@ namespace Seraph::Script
 		}
 		break;
 
-		case Seraph::Script::Expression_Random_Val_Get:
+		case Seraph::Script::V2::Expression_Random_Val_Get:
 		{
 			param[L"random_val"] = this->Read<int>();
 		}
 		break;
 
-		case Seraph::Script::Expression_Addition:
-		case Seraph::Script::Expression_Subtraction:
-		case Seraph::Script::Expression_Multiplication:
-		case Seraph::Script::Expression_Division:
-		case Seraph::Script::Expression_Modulus:
-		case Seraph::Script::Expression_AND:
-		case Seraph::Script::Expression_OR:
-		case Seraph::Script::Expression_XOR:
+		case Seraph::Script::V2::Expression_Addition:
+		case Seraph::Script::V2::Expression_Subtraction:
+		case Seraph::Script::V2::Expression_Multiplication:
+		case Seraph::Script::V2::Expression_Division:
+		case Seraph::Script::V2::Expression_Modulus:
+		case Seraph::Script::V2::Expression_AND:
+		case Seraph::Script::V2::Expression_OR:
+		case Seraph::Script::V2::Expression_XOR:
 			break;
 
-		case Seraph::Script::Expression_IF:
+		case Seraph::Script::V2::Expression_IF:
 		{
 			// ??
 			throw std::runtime_error("Parser::ParseExpressionInstrParam: Error!");
 		}
 		break;
 
-		case Seraph::Script::Expression_Equal:
-		case Seraph::Script::Expression_NotEqual:
-		case Seraph::Script::Expression_LessThanEqual:
-		case Seraph::Script::Expression_GreaterThanEqual:
-		case Seraph::Script::Expression_LessThan:
-		case Seraph::Script::Expression_GreaterThan:
-		case Seraph::Script::Expression_LogicalAND:
-		case Seraph::Script::Expression_LogicalOR:
+		case Seraph::Script::V2::Expression_Equal:
+		case Seraph::Script::V2::Expression_NotEqual:
+		case Seraph::Script::V2::Expression_LessThanEqual:
+		case Seraph::Script::V2::Expression_GreaterThanEqual:
+		case Seraph::Script::V2::Expression_LessThan:
+		case Seraph::Script::V2::Expression_GreaterThan:
+		case Seraph::Script::V2::Expression_LogicalAND:
+		case Seraph::Script::V2::Expression_LogicalOR:
 			break;
 
-		case Seraph::Script::Expression_PC_Set:
+		case Seraph::Script::V2::Expression_PC_Set:
 		{
 			param[L"pc"] = this->Read<int>();
 		}
 		break;
 
-		case Seraph::Script::Expression_End:
+		case Seraph::Script::V2::Expression_End:
 			break;
 
 		default: throw std::runtime_error("Parser::ParseExpressionInstrParam: Error!");

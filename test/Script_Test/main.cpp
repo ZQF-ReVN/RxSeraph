@@ -14,7 +14,7 @@ static void TestParse()
 		if (path_entry.is_regular_file() == false) { continue; }
 
 		script_mem.LoadFile(path_entry);
-		Seraph::Script::Parser script(script_mem);
+		Seraph::Script::V2::Parser script(script_mem);
 		Rut::RxJson::JValue codes = script.Parse();
 		Rut::RxJson::Parser::Save(codes, save_folder / path_entry.path().filename().replace_extension(L".json"), true);
 	}
