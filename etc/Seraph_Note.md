@@ -95,14 +95,14 @@ Based on [2006] [雛鳥の堕ちる音](https://vndb.org/v25450)
 
 ```c
 // 0x00 
-struct get_static_status_0
+struct get_stack_0
 {
     [BYTE:op]
     [BYTE:seq]
 };
 
 // 0x01 
-struct check_static_status_1
+struct check_stack_1
 {
     [BYTE:op]
     [BYTE:type]
@@ -118,14 +118,14 @@ struct check_static_status_1
 };
 
 // 0x02 
-struct get_static_status_2_type0
+struct get_stack_2_type0
 {
     [BYTE:op]
     [WORD:seq]
 };
 
 // 0x03 
-struct get_static_status_2_type1
+struct get_stack_2_type1
 {
     [BYTE:op]
     [WORD:seq]
@@ -133,7 +133,7 @@ struct get_static_status_2_type1
 };
 
 // 0x04
-struct get_static_status_2_type2
+struct get_stack_2_type2
 {
     [BYTE:op]
     [WORD:un]
@@ -829,4 +829,25 @@ C:\Hinadori\Seraph.exe Hinadori 雛鳥の堕ちる音
 | 2006-12-31 |     [Ex12](https://vndb.org/p1208)     |         [雛鳥の堕ちる音](https://vndb.org/v25450)         | PKG  |     `0x05EBB40D`     |   V2    |
 | 2000-07-14 |    [Ather](https://vndb.org/p1041)     |          [好きだよっ！](https://vndb.org/v4923)           | PKG  |                      |   V1    |
 |            |                                        |                                                           |      |                      |         |
+
+
+
+## CharName
+
+```asm
+00050B000000FF 0F091F000047
+-----^ char_name_image_file_seq_offset
+
+char_name_image_file_seq_base = 0xE9
+char_name_image_file_seq_offset
+char_name_image_file_seq = char_name_image_file_seq_base + char_name_image_file_seq_offset
+
+2C                save pc
+00 02 0B00 FF     param0
+00 05 00000000 FF param1
+00 00 10 FF       param2
+00 05 0B000000 FF param3       -> char_name_image_file_seq_offset
+0F 091F0000       jmp script 2 offset 0x91F
+47                switch to scenario mod
+```
 
