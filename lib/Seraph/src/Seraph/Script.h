@@ -39,11 +39,11 @@ namespace Seraph::Script
 
 	enum ExpressionInstruction
 	{
-		Expression_Static_Val0_Get,
-		Expression_Static_Val1_Check,
-		Expression_Static_Val2_Get_Type0,
-		Expression_Static_Val2_Get_Type1,
-		Expression_Static_Val2_Get_Type2,
+		Expression_Stack0_Get,
+		Expression_Stack1_Check,
+		Expression_Stack2_Get_Type0,
+		Expression_Stack2_Get_Type1,
+		Expression_Stack2_Get_Type2,
 		Expression_Dword_Get,
 		Expression_Res_Get,
 		Expression_Random_Val_Get,
@@ -224,11 +224,11 @@ namespace Seraph::Script
 	{
 		switch (this->GetOPCode())
 		{
-		case Seraph::Script::Expression_Static_Val0_Get: return L"Expression_Static_Val0_Get";
-		case Seraph::Script::Expression_Static_Val1_Check: return L"Expression_Static_Val1_Check";
-		case Seraph::Script::Expression_Static_Val2_Get_Type0: return L"Expression_Static_Val2_Get_Type0";
-		case Seraph::Script::Expression_Static_Val2_Get_Type1: return L"Expression_Static_Val2_Get_Type1";
-		case Seraph::Script::Expression_Static_Val2_Get_Type2: return L"Expression_Static_Val2_Get_Type2";
+		case Seraph::Script::Expression_Stack0_Get: return L"Expression_Stack0_Get";
+		case Seraph::Script::Expression_Stack1_Check: return L"Expression_Stack1_Check";
+		case Seraph::Script::Expression_Stack2_Get_Type0: return L"Expression_Stack2_Get_Type0";
+		case Seraph::Script::Expression_Stack2_Get_Type1: return L"Expression_Stack2_Get_Type1";
+		case Seraph::Script::Expression_Stack2_Get_Type2: return L"Expression_Stack2_Get_Type2";
 		case Seraph::Script::Expression_Dword_Get: return L"Expression_Dword_Get";
 		case Seraph::Script::Expression_Res_Get: return L"Expression_Res_Get";
 		case Seraph::Script::Expression_Random_Val_Get: return L"Expression_Random_Val_Get";
@@ -317,13 +317,13 @@ namespace Seraph::Script
 
 		switch (this->GetOPCode())
 		{
-		case Seraph::Script::Expression_Static_Val0_Get:
+		case Seraph::Script::Expression_Stack0_Get:
 		{
 			param[L"seq"] = this->Read<uint8_t>();
 		}
 		break;
 
-		case Seraph::Script::Expression_Static_Val1_Check:
+		case Seraph::Script::Expression_Stack1_Check:
 		{
 			uint8_t type = this->Read<uint8_t>();
 			param[L"flag"] = type;
@@ -340,20 +340,20 @@ namespace Seraph::Script
 		}
 		break;
 
-		case Seraph::Script::Expression_Static_Val2_Get_Type0:
+		case Seraph::Script::Expression_Stack2_Get_Type0:
 		{
 			param[L"seq"] = this->Read<uint16_t>();
 		}
 		break;
 
-		case Seraph::Script::Expression_Static_Val2_Get_Type1:
+		case Seraph::Script::Expression_Stack2_Get_Type1:
 		{
 			param[L"seq"] = this->Read<uint16_t>();
 			param[L"exp"] = this->ParseExpression();
 		}
 		break;
 
-		case Seraph::Script::Expression_Static_Val2_Get_Type2:
+		case Seraph::Script::Expression_Stack2_Get_Type2:
 		{
 			param[L"un0"] = this->Read<uint16_t>();
 			param[L"un1"] = this->Read<uint16_t>();
