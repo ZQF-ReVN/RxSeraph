@@ -204,13 +204,22 @@ struct set_pc
 };
 ```
 
+
+
+### StackCommand
+
+```c
+```
+
+
+
 ### SystemCommand
 
 ```c
-0x00 [un_command]
+0x00 [stack_command]
 {
     [BYTE:op]
-    [command]
+    [StackCommand]
 };
 
 0x01 [go 0x04]
@@ -778,7 +787,7 @@ struct end
 
 
 
-## 文本替换思路
+## Method of text replacement
 
 这玩意又是文本夹在代码中间的，分析了vm发现内部有相对或绝对的跳转，肯定是不能直接变换文本长度了。不过找到个SystemCommand的op:0x0A，是直接跳转的指令，也就是直接设置pc，所以理论上也可以使用和[Valkyria](https://github.com/Dir-A/Valkyria_Tools)差不多的思路，即，用vm的jmp指令跳出来，然后改文本再跳回去，有点类似于inline hook的样子，只不过这个是利用vm自己的指令，而且这个引擎的文本控制还是单独指令集的，即，SystemCommand有个指令可以把当前vm解析的指令模式切换到文本控制的指令集ScenarioCommand，而且这个指令集指令很少，基本分析完了，所以只要扫描SystemCommand切换到ScenarioCommand的指令，定位到ScenarioCommand的代码块（切换指令其后就是ScenarioCommand的代码块,扫描的特征码FF0F091F000047，最后这个47就是切换模式的op，同时ScenarioCommand的代码块以0xFF指令退出，也就是代码块的结束），然后写个jmp指令跳到文件末尾，解析ScenarioCommand的代码块就可以随便插入文本了，在代码块结束的位置跳回去就好了。主要是因为文本控制的op很少，分析省时间，完整的op很多，分析要太久，熬不住。
 
@@ -786,9 +795,9 @@ struct end
 
 
 
-## CD验证
+## Bypass CD Check
 
-### 参数检测
+### Command Line Arguments Check
 
 `0x00412BB3`
 
@@ -805,13 +814,13 @@ C:\Hinadori\Seraph.exe Hinadori 雛鳥の堕ちる音
 
 如果启动缺少这两个参数，会在sscnf的返回值检测出来，从而退出程序
 
-### INI子项检测
+### INI File Check
 
 `0x00412C00`
 
 紧接着游戏通过 GetPrivateProfileStringA 来从 Assemblage.ini 读取在游戏英文名为section的ini中的key - val，由于 GetPrivateProfileStringA 的设置，不传递完整路径从 Windows 目录读取，所以游戏安装的时候会把 Assemblage.ini 写到Windows目录里，如果Windows目录里没有该文件，或者不存在section中的InstDIR键值则程序退出
 
-### CD检测
+### CD Drive Check
 
 `0x00412CE1`
 
@@ -832,22 +841,47 @@ C:\Hinadori\Seraph.exe Hinadori 雛鳥の堕ちる音
 
 
 
-## CharName
+## Character Name Display
 
-```asm
-00050B000000FF 0F091F000047
------^ char_name_image_file_seq_offset
+```c
+struct param
+{
+   [BYTE:op]
+    
+   [BYTE:type]
+   [val]
+   [BYTE:type]
+   [val]
+   [BYTE:type]
+   [val]
+   ...
+       
+   [BYTE:end=0xFF]
+}；
 
-char_name_image_file_seq_base = 0xE9
+// type draw text box with char name
+2C                save pc
+00 02 0B00 FF     push param0
+00 05 00000000 FF push param1
+00 00 10 FF       push param2
+00 05 0B000000 FF push param3       -> char_name_image_file_seq_offset
+0F 091F0000       jmp script 2 to offset 0x91F (call draw text box)
+47                switch to scenario command parse mod
+
+// type draw text box without char name
+2C
+00 00 10 FF
+00 05 00000000 FF
+0F 091F0000 
+47
+
+00[op] 02[type] 0B00[val] FF[end]     push param0
+
+00 05 0B000000 FF 0F 091F0000 47
+______^ char_name_image_file_seq_offset
+
+char_name_image_file_seq_base = 0xE9 <-雛鳥の堕ちる音
 char_name_image_file_seq_offset
 char_name_image_file_seq = char_name_image_file_seq_base + char_name_image_file_seq_offset
-
-2C                save pc
-00 02 0B00 FF     param0
-00 05 00000000 FF param1
-00 00 10 FF       param2
-00 05 0B000000 FF param3       -> char_name_image_file_seq_offset
-0F 091F0000       jmp script 2 offset 0x91F
-47                switch to scenario mod
 ```
 
