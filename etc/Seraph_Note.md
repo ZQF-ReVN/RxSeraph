@@ -792,7 +792,7 @@ struct end
 0x01 text_format            -> format   -> [format=exp]
 0x02 font_set_color_r       -> fr       -> [fr=10]
 0x03 font_set_color_g       -> fg       -> [fg=10]
-0x04 font_set_color_b       -> fb       -> [fg=10]
+0x04 font_set_color_b       -> fb       -> [fb=10]
 0x05 font_set_width         -> fw       -> [fw=10]
 0x06 font_set_heigh         -> fh       -> [fh=10]
 0x07 
