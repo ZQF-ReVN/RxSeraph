@@ -58,5 +58,5 @@ static void UserMain(int argc, wchar_t* argv[])
 
 int main()
 {
-	BatchDecompress(L"ScnPac/", L"scn_dec/", GetFilterSet(L"[000714][Ather] 好きだよっ"));
+	BatchDecompress(L"ScnPac/", L"scn_dec/", GetFilterSet(L"[061215][EX12] 雛鳥の堕ちる音"));
 }

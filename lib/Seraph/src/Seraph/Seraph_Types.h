@@ -15,4 +15,6 @@ namespace Seraph
         uint32_t uiSegmentFOA;
         uint32_t uiFileCount;
     };
+
+    typedef void(__stdcall* Fn_ScriptLoad)();
 }

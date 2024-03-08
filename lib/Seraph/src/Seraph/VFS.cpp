@@ -1,33 +1,28 @@
 #include "VFS.h"
+#include "Seraph_Types.h"
 #include <Rut/RxFile.h>
 #include <RxHook/Hook.h>
 
 
 namespace Seraph::VFS
 {
-	static uint32_t** sg_ppCode = (uint32_t**)0x0045E180;
-	static uint32_t** sg_ppCodeBuffer = (uint32_t**)0x0045DC80;
-	static uint32_t* sg_nCurCodeSlotPtr = (uint32_t*)0x0045E160;
-	static uint32_t* sg_nPackReadSeqPtr = (uint32_t*)0x0045E014;
-	static uint32_t* sg_nPackReadModePtr = (uint32_t*)0x0045E100;
+	static uint32_t** sg_ppScript = nullptr;
+	static uint32_t** sg_ppScriptTemp = nullptr;
+	static uint32_t* sg_pCurCodeSlot = nullptr;
+	static uint32_t* sg_pPackReadSeq = nullptr;
+	static uint32_t* sg_pPackReadMod = nullptr;
+	static Fn_ScriptLoad sg_fnScriptLoad = nullptr;
 
-	typedef void(__stdcall* Fn_ScriptLoad)();
-	static Fn_ScriptLoad sg_fnScriptLoad = (Fn_ScriptLoad)0x0040C570;
 
 	static void __stdcall ScriptLoad_Hook()
 	{
-		if (*sg_nPackReadModePtr == 0)
+		if (*sg_pPackReadMod == 0)
 		{
-			if (*sg_nCurCodeSlotPtr)
-			{
-				*sg_ppCode = *sg_ppCodeBuffer;
-			}
-			*sg_nCurCodeSlotPtr = 0;
-
-			wchar_t path[256];
-			::wsprintfW(path, L"ScnPac/%d", *sg_nPackReadSeqPtr);
+			*sg_pCurCodeSlot ? (void)(*sg_ppScript = *sg_ppScriptTemp) : (void)(*sg_pCurCodeSlot = 0);
+			wchar_t path[64];
+			::wsprintfW(path, L"ScnPac/%08d.scn", *sg_pPackReadSeq);
 			Rut::RxFile::Binary ifs{ path, Rut::RIO_READ };
-			ifs.Read(*sg_ppCodeBuffer, ifs.GetSize());
+			ifs.Read(*sg_ppScriptTemp, ifs.GetSize());
 		}
 		else
 		{
@@ -35,8 +30,15 @@ namespace Seraph::VFS
 		}
 	}
 
-	void SetHook()
+
+	void ScriptHook(uint32_t fnScriptLoad, uint32_t nScriptPtr, uint32_t nScriptTempPtr, uint32_t nCurCodeSlot, uint32_t nPackReadSeq, uint32_t nPackReadMod)
 	{
+		sg_ppScript = (uint32_t**)nScriptPtr;
+		sg_ppScriptTemp = (uint32_t**)nScriptTempPtr;
+		sg_pCurCodeSlot = (uint32_t*)nCurCodeSlot;
+		sg_pPackReadSeq = (uint32_t*)nPackReadSeq;
+		sg_pPackReadMod = (uint32_t*)nPackReadMod;
+		sg_fnScriptLoad = (Fn_ScriptLoad)fnScriptLoad;
 		Rut::RxHook::Detours::AttachDirectly(&sg_fnScriptLoad, ScriptLoad_Hook);
 	}
 }

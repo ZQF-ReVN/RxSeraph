@@ -1,14 +1,12 @@
 #include <Windows.h>
-
 #include <Seraph/VFS.h>
-
 
 static DWORD g_dwExeBase = (DWORD)GetModuleHandleW(NULL);
 
 
-void StartHook()
+static void StartHook()
 {
-	Seraph::VFS::SetHook();
+	Seraph::VFS::ScriptHook(0x0040C570, 0x0045E180, 0x0045DC80, 0x0045E160, 0x0045E014, 0x0045E100);
 }
 
 

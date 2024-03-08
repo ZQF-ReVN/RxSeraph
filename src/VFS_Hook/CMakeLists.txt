@@ -4,7 +4,7 @@ if (NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
 endif()
 
 # Project Name
-project(VFS_Test)
+project(VFS_Hook)
 
 # Current Project
 add_library("${PROJECT_NAME}" MODULE "dllmain.cpp")
