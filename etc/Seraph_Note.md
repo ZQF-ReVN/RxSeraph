@@ -785,6 +785,38 @@ struct end
 };
 ```
 
+#### Human Readable
+
+```asm
+0x00 
+0x01 text_format            -> format   -> [format=exp]
+0x02 font_set_color_r       -> fr       -> [fr=10]
+0x03 font_set_color_g       -> fg       -> [fg=10]
+0x04 font_set_color_b       -> fb       -> [fg=10]
+0x05 font_set_width         -> fw       -> [fw=10]
+0x06 font_set_heigh         -> fh       -> [fh=10]
+0x07 
+0x08 time_wait              -> w        -> [w=10]
+0x09 text_allow_color_green -> tag      -> [tag=10]
+0x0A text_draw_layer -> tdl -> layer    -> [layer=10]
+0x0B text_allow_vertical    -> vertical -> [vertical=10]
+0x0C 
+0x0D
+0x0E text_indent_add        -> tia      -> [tia=10]
+0x0F se_play                -> se       -> [se=10]
+0x10 cursor_allow_click     -> click    -> [click=10]
+0x11 text_indent_at         -> tit      -> [tit=10]
+0x12
+0x13
+0x14 next_line              -> n        -> [n]
+0x15 input_wait             -> r        -> [r]
+0x16 text_indent_flag       -> t        -> [t]
+0x17 next_page              -> p        -> [p]
+0x18 voice_play             -> voice    -> [voice=10]
+0x19 screen_shake           -> shake    -> [shake]
+0xFF end                    -> end      -> [end]
+```
+
 
 
 ## Method of text replacement
@@ -878,10 +910,43 @@ struct param
 00[op] 02[type] 0B00[val] FF[end]     push param0
 
 00 05 0B000000 FF 0F 091F0000 47
-______^ char_name_image_file_seq_offset
+______^____________________________ char_name_image_file_seq_offset
 
 char_name_image_file_seq_base = 0xE9 <-雛鳥の堕ちる音
 char_name_image_file_seq_offset
 char_name_image_file_seq = char_name_image_file_seq_base + char_name_image_file_seq_offset
+```
+
+## Select Box
+
+```asm
+56                         -> op
+05 03000000 FF             -> exp
+05 00000000 FF             -> exp
+05 00000000 FF             -> exp
+05 00000000 FF             -> exp
+05 00000000 FF             -> exp
+7C3F0000                   -> pc
+FE                         -> if == 0xFF end code
+02                         -> select text count
+7B3F0000                   -> pc
+8DF782A982E78F5082A400     -> "桜から襲う"
+93FA8CFC82A982E78F5082A400 -> "日向から襲う"
+FF                         -> end
+
+
+56
+0503000000FF
+0500000000FF
+0500000000FF
+0500000000FF
+0500000000FF
+58480000
+FE
+02
+57480000
+E45393E082C98F6F82B700   -> "膣内に出す"
+82D482C182A982AF82E900   -> "ぶっかける"
+FF
 ```
 
