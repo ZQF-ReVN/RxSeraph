@@ -19,4 +19,9 @@ target_compile_options("${PROJECT_NAME}" PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/sou
 target_include_directories("${PROJECT_NAME}" INTERFACE "src")
 
 # Add Library
-target_link_libraries("${PROJECT_NAME}" PRIVATE Rut RxHook zlibstatic)
+target_link_libraries("${PROJECT_NAME}" PRIVATE Rut zlibstatic)
+
+# Library Only x32
+if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+	target_link_libraries("${PROJECT_NAME}" PRIVATE RxHook)
+endif()

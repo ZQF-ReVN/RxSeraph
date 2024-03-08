@@ -68,6 +68,7 @@ namespace Seraph::Script::V2
 		Expression_End = 0xFF
 	};
 
+	// class SystemCommand::DrawSelect::Parser
 
 	class Parser
 	{
@@ -98,7 +99,7 @@ namespace Seraph::Script::V2
 		Rut::RxJson::JValue ParseExpressionInstrParam();
 
 	public:
-		Rut::RxJson::JValue Parse();
+		Rut::RxJson::JValue Parse(std::unordered_map<size_t, std::wstring>& rNameTable);
 
 	};
 
@@ -428,27 +429,76 @@ namespace Seraph::Script::V2
 		return param;
 	}
 
-	Rut::RxJson::JValue Parser::Parse()
+	Rut::RxJson::JValue Parser::Parse(std::unordered_map<size_t, std::wstring>& rNameTable)
 	{
-		uint8_t search_code[] = { 0xFF, 0x0F, 0x09, 0x1F, 0x00, 0x00, 0x47 };
+		uint8_t search_draw_select_box[] = 
+		{
+			0x56, 0x05, 0x03, 0x00, 0x00, 0x00, 0xFF, 0x05, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x05, 0x00, 0x00,
+			0x00, 0x00, 0xFF, 0x05, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x05, 0x00, 0x00, 0x00, 0x00, 0xFF
+		};
+
+		uint8_t search_call_draw_text_box_into_scen[] = 
+		{ 
+			0xFF, 0x0F, 0x09, 0x1F, 0x00, 0x00, 0x47
+		};
 
 		Rut::RxJson::JArray codes;
 		for (; ;)
 		{
-			if (this->GetPC() >= m_spCode.size())
-			{
-				break;
-			}
+			if (this->GetPC() >= m_spCode.size()) { break; }
 
-			if (memcmp(m_spCode.data() + this->GetPC(), search_code, sizeof(search_code)))
+			uint8_t* cur_ptr = m_spCode.data() + this->GetPC();
+
+			if (memcmp(cur_ptr, search_call_draw_text_box_into_scen, sizeof(search_call_draw_text_box_into_scen)) == 0)
 			{
-				this->SkipPC(1);
-				continue;
+				// get character name
+				uint8_t* param_ptr = m_spCode.data() + this->GetPC() - 7;
+				if (param_ptr[1] == 0x00 && param_ptr[2] == 0x05 && param_ptr[7] == 0xFF)
+				{
+					uint32_t char_name_inmage_seq = *(uint32_t*)(param_ptr + 3);
+					Rut::RxJson::JObject char_name_json;
+					char_name_json[L"self"] = L"character";
+					char_name_json[L"name"] = rNameTable[char_name_inmage_seq];
+					codes.emplace_back(std::move(char_name_json));
+				}
+				else
+				{
+					throw std::runtime_error("Parser::Parse: not find character name");
+				}
+
+				// parse scenario codes
+				this->SkipPC(sizeof(search_call_draw_text_box_into_scen));
+				Rut::RxJson::JObject msg_json;
+				msg_json[L"self"] = L"msg";
+				msg_json[L"begin"] = (int)this->GetPC();
+				msg_json[L"tests"] = this->ParseScenario();
+				codes.emplace_back(std::move(msg_json));
+			}
+			else if (memcmp(cur_ptr, search_draw_select_box, sizeof(search_draw_select_box)) == 0) // parse DrawSelect
+			{
+				// get select texts
+				uint8_t* text_0_ptr = cur_ptr + sizeof(search_draw_select_box) + 0xA;
+				std::string_view text_0 = (char*)text_0_ptr;
+				uint8_t* text_1_ptr = text_0_ptr + text_0.size() + 1;
+				std::string_view text_1 = (char*)text_1_ptr;
+
+				// gen select json
+				Rut::RxJson::JObject select_json;
+				select_json[L"self"] = L"select";
+				select_json[L"begin"] = (int)this->GetPC();
+				Rut::RxJson::JArray& select_text_jarray = select_json[L"texts"].ToAry();
+				select_text_jarray.emplace_back(Rut::RxStr::ToWCS(text_0, 932));
+				select_text_jarray.emplace_back(Rut::RxStr::ToWCS(text_1, 932));
+
+				// add json
+				codes.emplace_back(std::move(select_json));
+
+				// skip draw select box code
+				this->SkipPC(sizeof(search_draw_select_box) + 0xA + text_0.size() + text_1.size() + 2 + 1);
 			}
 			else
 			{
-				this->SkipPC(sizeof(search_code));
-				codes.emplace_back(this->ParseScenario());
+				this->SkipPC(1);
 			}
 		}
 
