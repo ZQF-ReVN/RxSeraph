@@ -94,7 +94,7 @@ static void TestParse()
 	}
 }
 
-static void ExportTBatch()
+static void ExportBatch()
 {
 	std::filesystem::path save_folder = L"human/";
 	std::filesystem::create_directories(save_folder);
@@ -107,6 +107,6 @@ static void ExportTBatch()
 
 int main()
 {
-	ExportTBatch();
+	ExportBatch();
 	//TestParse();
 }

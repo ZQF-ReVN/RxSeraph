@@ -5,6 +5,9 @@ project(Seraph)
 list(APPEND "${PROJECT_NAME}_SRC_FILE" 
 	"src/Seraph/Dat.cpp"
 	"src/Seraph/Script.cpp"
+	"src/Seraph/Script_Reader.cpp"
+	"src/Seraph/Script_Scenario.cpp"
+	"src/Seraph/Script_Expression.cpp"
 	"src/Seraph/Script_Cryptor.cpp")
 
 # Source File Only x32
