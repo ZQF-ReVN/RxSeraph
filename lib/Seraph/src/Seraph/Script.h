@@ -149,8 +149,16 @@ namespace Seraph::Script::V2
 
 	bool Parser::NextInstr()
 	{
-		m_ucOP = this->Read<uint8_t>();
-		return m_ucOP != 0xFF ? true : false;
+		if (m_ucOP != 0xFF)
+		{
+			m_ucOP = this->Read<uint8_t>();
+			return true;
+		}
+		else
+		{
+			m_ucOP = this->Read<uint8_t>();
+			return false;
+		}
 	}
 
 	uint8_t Parser::GetOPCode() const
@@ -298,6 +306,7 @@ namespace Seraph::Script::V2
 		case Scenario_Input_Wait:
 		case Scenario_Text_Indent_Flag:
 		case Scenario_Next_Page:
+		case Scenario_End:
 			break;
 
 		case Scenario_Voice_Play:
@@ -471,7 +480,7 @@ namespace Seraph::Script::V2
 				Rut::RxJson::JObject msg_json;
 				msg_json[L"self"] = L"msg";
 				msg_json[L"begin"] = (int)this->GetPC();
-				msg_json[L"tests"] = this->ParseScenario();
+				msg_json[L"texts"] = this->ParseScenario();
 				codes.emplace_back(std::move(msg_json));
 			}
 			else if (memcmp(cur_ptr, search_draw_select_box, sizeof(search_draw_select_box)) == 0) // parse DrawSelect
