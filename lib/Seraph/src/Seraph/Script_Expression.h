@@ -8,20 +8,20 @@
 
 namespace Seraph::Script::V2
 {
-	class ExpressionParser
+	class Expression
 	{
 	private:
 		Reader& m_Reader;
 
 	public:
-		ExpressionParser(Reader& rReader) : m_Reader(rReader)
+		Expression(Reader& rReader) : m_Reader(rReader)
 		{
 
 		}
 
-		std::wstring ParseExpressionInstrName() const
+		std::wstring ParseName() const
 		{
-			switch (m_Reader.GetOPCode())
+			switch (m_Reader.GetCurOP())
 			{
 			case Seraph::Script::V2::Expression_Stack0_Get: return L"Expression_Stack0_Get";
 			case Seraph::Script::V2::Expression_Stack1_Check: return L"Expression_Stack1_Check";
@@ -54,11 +54,11 @@ namespace Seraph::Script::V2
 			};
 		}
 
-		Rut::RxJson::JValue ParseExpressionInstrParam()
+		Rut::RxJson::JValue ParseInstrParam()
 		{
 			Rut::RxJson::JObject param;
 
-			switch (m_Reader.GetOPCode())
+			switch (m_Reader.GetCurOP())
 			{
 			case Seraph::Script::V2::Expression_Stack0_Get:
 			{
@@ -154,6 +154,7 @@ namespace Seraph::Script::V2
 			case Seraph::Script::V2::Expression_GreaterThan:
 			case Seraph::Script::V2::Expression_LogicalAND:
 			case Seraph::Script::V2::Expression_LogicalOR:
+			case Seraph::Script::V2::Expression_End:
 				break;
 
 			case Seraph::Script::V2::Expression_PC_Set:
@@ -161,9 +162,6 @@ namespace Seraph::Script::V2
 				param[L"pc"] = m_Reader.Read<int>();
 			}
 			break;
-
-			case Seraph::Script::V2::Expression_End:
-				break;
 
 			default: throw std::runtime_error("Parser::ParseExpressionInstrParam: Error!");
 			}
@@ -175,14 +173,14 @@ namespace Seraph::Script::V2
 		{
 			Rut::RxJson::JArray codes;
 
-			while (m_Reader.NextInstr())
+			do
 			{
 				Rut::RxJson::JObject instr;
-				instr[L"opcode"] = m_Reader.GetOPCode();
-				instr[L"command"] = this->ParseExpressionInstrName();
-				instr[L"parameter"] = this->ParseExpressionInstrParam();
+				instr[L"opcode"] = m_Reader.ReadOP();
+				instr[L"command"] = this->ParseName();
+				instr[L"parameter"] = this->ParseInstrParam();
 				codes.emplace_back(std::move(instr));
-			}
+			} while (m_Reader.GetCurOP() != 0xFF);
 
 			return codes;
 		}

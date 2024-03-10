@@ -8,20 +8,20 @@
 
 namespace Seraph::Script::V2
 {
-	class ScenarioParser
+	class Scenario
 	{
 	private:
 		Reader& m_Reader;
 
 	public:
-		ScenarioParser(Reader& rReader) : m_Reader(rReader)
+		Scenario(Reader& rReader) : m_Reader(rReader)
 		{
 
 		}
 
-		std::wstring ParseScenarioInstrName() const
+		std::wstring ParseInstrName() const
 		{
-			switch (m_Reader.GetOPCode())
+			switch (m_Reader.GetCurOP())
 			{
 			case Scenario_Text_Push: return L"Scenario_Text_Push";
 			case Scenario_Text_Format: return L"Scenario_Text_Format";
@@ -50,11 +50,11 @@ namespace Seraph::Script::V2
 			}
 		}
 
-		Rut::RxJson::JValue ParseScenarioInstrParam()
+		Rut::RxJson::JValue ParseInstrParam()
 		{
 			Rut::RxJson::JObject param;
 
-			switch (m_Reader.GetOPCode())
+			switch (m_Reader.GetCurOP())
 			{
 			case Scenario_Text_Push:
 			{
@@ -111,14 +111,14 @@ namespace Seraph::Script::V2
 		{
 			Rut::RxJson::JArray codes;
 
-			while (m_Reader.NextInstr())
+			do
 			{
 				Rut::RxJson::JObject instr;
-				instr[L"opcode"] = m_Reader.GetOPCode();
-				instr[L"command"] = this->ParseScenarioInstrName();
-				instr[L"parameter"] = this->ParseScenarioInstrParam();
+				instr[L"opcode"] = m_Reader.ReadOP();
+				instr[L"command"] = this->ParseInstrName();
+				instr[L"parameter"] = this->ParseInstrParam();
 				codes.emplace_back(std::move(instr));
-			}
+			} while (m_Reader.GetCurOP() != 0xFF);
 
 			return codes;
 		}
