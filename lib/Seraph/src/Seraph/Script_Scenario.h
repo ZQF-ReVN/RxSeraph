@@ -46,7 +46,7 @@ namespace Seraph::Script::V2
 			case Scenario_Voice_Play: return L"Scenario_Voice_Play";
 			case Scenario_Screen_Shake: return L"Scenario_Screen_Shake";
 			case Scenario_End: return L"Scenario_End";
-			default: throw std::runtime_error("Parser::ParseScenarioInstrName: Error Command!");
+			default: throw std::runtime_error("Scenario::ParseInstrName: Error Command!");
 			}
 		}
 
@@ -56,18 +56,8 @@ namespace Seraph::Script::V2
 
 			switch (m_Reader.GetCurOP())
 			{
-			case Scenario_Text_Push:
-			{
-				param[L"value"] = m_Reader.Read<std::wstring>();
-			}
-			break;
-
-			case Scenario_Text_Format:
-			{
-				throw std::runtime_error("Parser::ParseScenarioInstrParam: Error!");
-			}
-			break;
-
+			case Scenario_Text_Push: { param[L"value"] = m_Reader.Read<std::wstring>(); } break;
+			case Scenario_Text_Format: { throw std::runtime_error("Scenario::ParseInstrParam: Error!"); } break;
 			case Scenario_Font_Set_Color_R:
 			case Scenario_Font_Set_Color_G:
 			case Scenario_Font_Set_Color_B:
@@ -82,26 +72,14 @@ namespace Seraph::Script::V2
 			case Scenario_Se_Play:
 			case Scenario_Cursor_Allow_Click:
 			case Scenario_Text_Indent_At:
-			case Scenario_Screen_Shake:
-			{
-				param[L"value"] = m_Reader.Read<uint8_t>();
-			}
-			break;
-
+			case Scenario_Screen_Shake: { param[L"value"] = m_Reader.Read<uint8_t>(); } break;
 			case Scenario_Next_Line:
 			case Scenario_Input_Wait:
 			case Scenario_Text_Indent_Flag:
 			case Scenario_Next_Page:
-			case Scenario_End:
-				break;
-
-			case Scenario_Voice_Play:
-			{
-				param[L"value"] = m_Reader.Read<int>();
-			}
-			break;
-
-			default: throw std::runtime_error("Parser::ParseScenarioInstrParam: Error!");
+			case Scenario_End: break;
+			case Scenario_Voice_Play: { param[L"value"] = (int)m_Reader.Read<uint32_t>(); } break;
+			default: throw std::runtime_error("Scenario::ParseInstrParam: Error!");
 			}
 
 			return param;

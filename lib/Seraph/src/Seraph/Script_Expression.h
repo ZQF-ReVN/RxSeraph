@@ -19,7 +19,7 @@ namespace Seraph::Script::V2
 
 		}
 
-		std::wstring ParseName() const
+		std::wstring ParseInstrName() const
 		{
 			switch (m_Reader.GetCurOP())
 			{
@@ -50,7 +50,7 @@ namespace Seraph::Script::V2
 			case Seraph::Script::V2::Expression_LogicalOR: return L"Expression_LogicalOR";
 			case Seraph::Script::V2::Expression_PC_Set: return L"Expression_PC_Set";
 			case Seraph::Script::V2::Expression_End: return L"Expression_End";
-			default: throw std::runtime_error("Parser::ParseExpressionInstrName: Error!");
+			default: throw std::runtime_error("Expression::ParseName: Error!");
 			};
 		}
 
@@ -136,13 +136,12 @@ namespace Seraph::Script::V2
 			case Seraph::Script::V2::Expression_Modulus:
 			case Seraph::Script::V2::Expression_AND:
 			case Seraph::Script::V2::Expression_OR:
-			case Seraph::Script::V2::Expression_XOR:
-				break;
+			case Seraph::Script::V2::Expression_XOR: break;
 
 			case Seraph::Script::V2::Expression_IF:
 			{
 				// ??
-				throw std::runtime_error("Parser::ParseExpressionInstrParam: Error!");
+				throw std::runtime_error("Expression::ParseInstrParam: Error!");
 			}
 			break;
 
@@ -154,8 +153,7 @@ namespace Seraph::Script::V2
 			case Seraph::Script::V2::Expression_GreaterThan:
 			case Seraph::Script::V2::Expression_LogicalAND:
 			case Seraph::Script::V2::Expression_LogicalOR:
-			case Seraph::Script::V2::Expression_End:
-				break;
+			case Seraph::Script::V2::Expression_End: break;
 
 			case Seraph::Script::V2::Expression_PC_Set:
 			{
@@ -163,7 +161,7 @@ namespace Seraph::Script::V2
 			}
 			break;
 
-			default: throw std::runtime_error("Parser::ParseExpressionInstrParam: Error!");
+			default: throw std::runtime_error("Expression::ParseInstrParam: Error!");
 			}
 
 			return param;
@@ -177,7 +175,7 @@ namespace Seraph::Script::V2
 			{
 				Rut::RxJson::JObject instr;
 				instr[L"opcode"] = m_Reader.ReadOP();
-				instr[L"command"] = this->ParseName();
+				instr[L"command"] = this->ParseInstrName();
 				instr[L"parameter"] = this->ParseInstrParam();
 				codes.emplace_back(std::move(instr));
 			} while (m_Reader.GetCurOP() != 0xFF);
