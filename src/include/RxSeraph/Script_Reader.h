@@ -1,6 +1,7 @@
 #pragma once
 #include <span>
 #include <string>
+#include <string_view>
 #include <ZxCvt/ZxCvt.h>
 
 
@@ -9,9 +10,9 @@ namespace ZQF::RxSeraph::Script::V2
 	class Reader
 	{
 	private:
-		uint8_t m_ucOP = 0;
-		uint32_t m_nPC = 0;
-		size_t m_nCodePage = 0;
+        uint8_t m_ucOP{};
+        uint32_t m_nPC{};
+        size_t m_nCodePage{};
 		const std::span<uint8_t> m_spScript;
 
 	public:
@@ -20,12 +21,12 @@ namespace ZQF::RxSeraph::Script::V2
 
 		}
 
-		Reader(std::span<uint8_t> spScript, size_t nCodePage) : m_spScript(spScript), m_nCodePage(nCodePage)
+		Reader(std::span<uint8_t> spScript, size_t nCodePage) : m_nCodePage(nCodePage), m_spScript(spScript)
 		{
 
 		}
 
-		Reader(std::span<uint8_t> spScript, uint32_t nPC, size_t nCodePage) : m_spScript(spScript), m_nPC(nPC), m_nCodePage(nCodePage)
+		Reader(std::span<uint8_t> spScript, uint32_t nPC, size_t nCodePage) : m_nPC(nPC), m_nCodePage(nCodePage), m_spScript(spScript)
 		{
 
 		}
@@ -40,9 +41,9 @@ namespace ZQF::RxSeraph::Script::V2
 			if constexpr (std::is_same_v<T, std::string>)
 			{
 				char* str_ptr = reinterpret_cast<char*>(m_spScript.data() + m_nPC);
-				size_t str_len = strlen(str_ptr);
-				m_nPC += static_cast<uint32_t>(str_len + 1);
-                return std::string{ ZxCvt{}.MBCSToUTF8(std::string_view{str_ptr,str_len}, m_nCodePage) };
+                std::string_view str = str_ptr;
+				m_nPC += static_cast<uint32_t>(str.size() + 1);
+                return std::string{ ZxCvt{}.MBCSToUTF8(str, m_nCodePage) };
 			}
 			else
 			{

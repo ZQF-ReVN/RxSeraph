@@ -9,7 +9,7 @@ namespace ZQF::RxSeraph
         std::uint32_t nSegmentCnt;
         std::uint32_t nFileCnt;
 
-        static auto Sizebyte() -> size_t
+        static consteval auto Sizebyte() -> std::size_t
         {
             return sizeof(nSegmentCnt) + sizeof(nFileCnt);
         }
@@ -20,11 +20,11 @@ namespace ZQF::RxSeraph
         uint32_t nSegmentFOA;
         uint32_t nFileCnt;
 
-        static auto Sizebyte() -> size_t
+        static consteval auto Sizebyte() -> std::size_t
         {
             return sizeof(nSegmentFOA) + sizeof(nFileCnt);
         }
     };
 
-    typedef void(__stdcall* Fn_ScriptLoad)();
+    // typedef void(__stdcall* Fn_ScriptLoad)();
 }

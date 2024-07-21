@@ -1,5 +1,5 @@
 # RxSeraph
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 
 # Project Name
 project(Rvn_RxSeraph)
@@ -29,7 +29,7 @@ target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_23)
 target_compile_options("${PROJECT_NAME}" PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 # Pkg
-target_link_libraries("${PROJECT_NAME}" PUBLIC zlibstatic Zut::ZxMem Zut::ZxJson Zut::ZxCvt Zut::ZxFile)
+target_link_libraries("${PROJECT_NAME}" PUBLIC ZLIB::ZLIB Zut::ZxMem Zut::ZxJson Zut::ZxCvt Zut::ZxFile)
 
 # Warning
 if(MSVC)

@@ -1,5 +1,5 @@
 # RxSeraph Main
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 
 # Project Name
 project(Rvn_RxSeraph_Main)
@@ -7,10 +7,8 @@ project(Rvn_RxSeraph_Main)
 # On Test Preset
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     include(CMakeMycfg.cmake)
+    include(CMakeMypkg.cmake)
 endif()
-
-# Package
-add_subdirectory(pkg)
 
 # Source
 add_subdirectory(src)

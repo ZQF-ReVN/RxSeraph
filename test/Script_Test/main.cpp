@@ -10,7 +10,7 @@
 #include <RxSeraph/Script_Cryptor.h>
 
 
-static std::vector<std::string> GetNameTable(const std::string_view msNameTablePath, const std::string_view msGameTitle)
+[[maybe_unused]]  static auto GetNameTable(const std::string_view msNameTablePath, const std::string_view msGameTitle) -> std::vector<std::string>
 {
     ZQF::ZxJson::JDoc name_table_doc{ msNameTablePath };
 
@@ -23,7 +23,7 @@ static std::vector<std::string> GetNameTable(const std::string_view msNameTableP
 	return name_table;
 }
 
-static void ExportText(const std::string_view msJsonPath, const std::string_view msSavePath)
+[[maybe_unused]]  static auto ExportText(const std::string_view msJsonPath, const std::string_view msSavePath) -> void
 {
 	std::string txt;
 	std::string_view char_name;
@@ -76,7 +76,7 @@ static void ExportText(const std::string_view msJsonPath, const std::string_view
     ZQF::ZxFile{ msSavePath, ZQF::ZxFile::OpenMod::WriteForce } << txt;
 }
 
-static void TestParse()
+[[maybe_unused]]  static auto TestParse() -> int
 {
 	std::vector<std::string> name_table = GetNameTable("name_table.json", "[061215][EX12] 雛鳥の堕ちる音");
 
@@ -87,7 +87,8 @@ static void TestParse()
 	{
 		if (path_entry.is_regular_file() == false) { continue; }
 
-		script_mem.Load(path_entry.path().string());
+		/*script_mem.Load(path_entry.path().string());*/
+        script_mem.Load(path_entry.path().string());
 		ZQF::RxSeraph::Script::V2::Parser script(script_mem.Span(), 932);
         ZQF::ZxJson::JDoc jdoc;
         jdoc.GetJValue() = script.Parse(name_table);
@@ -95,12 +96,12 @@ static void TestParse()
 	}
 }
 
-static void TestScenarioMake()
+[[maybe_unused]] static auto TestScenarioMake() -> int
 {
 
 }
 
-static void ExportBatch()
+[[maybe_unused]] static auto ExportBatch() -> int
 {
 	std::filesystem::path save_folder = "human/";
 	std::filesystem::create_directories(save_folder);
@@ -113,17 +114,16 @@ static void ExportBatch()
 
 
 
-int main()
+auto main() -> int
 {
     try
     {
         TestParse();
-        //ExportBatch();
-        // ZQF::RxSeraph::Script::Crypt::BatchDec("ScnPac/", "scn_dec/", "script_filter.json", "[061215][EX12] 雛鳥の堕ちる音");
+        // ExportBatch();
+        //ZQF::RxSeraph::Script::Cryptor::BatchDec("ScnPac/", "scn_dec/", "script_filter.json", "[061215][EX12] 雛鳥の堕ちる音");
     }
     catch (const std::exception& err)
     {
         std::println(std::cerr, "std::exception: {}", err.what());
     }
-
 }
