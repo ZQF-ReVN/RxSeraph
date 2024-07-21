@@ -76,7 +76,7 @@
     ZQF::ZxFile{ msSavePath, ZQF::ZxFile::OpenMod::WriteForce } << txt;
 }
 
-[[maybe_unused]]  static auto TestParse() -> int
+[[maybe_unused]]  static auto TestParse() -> void
 {
 	std::vector<std::string> name_table = GetNameTable("name_table.json", "[061215][EX12] 雛鳥の堕ちる音");
 
@@ -96,12 +96,12 @@
 	}
 }
 
-[[maybe_unused]] static auto TestScenarioMake() -> int
+[[maybe_unused]] static auto TestScenarioMake() -> void
 {
 
 }
 
-[[maybe_unused]] static auto ExportBatch() -> int
+[[maybe_unused]] static auto ExportBatch() -> void
 {
 	std::filesystem::path save_folder = "human/";
 	std::filesystem::create_directories(save_folder);
