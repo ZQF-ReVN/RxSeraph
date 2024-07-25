@@ -1,6 +1,6 @@
 #include <RxSeraph/Script_Cryptor.h>
 #include <ZxJson/JDoc.h>
-#include <filesystem>
+#include <ZxFS/ZxFS.h>
 
 
 namespace ZQF::RxSeraph::Script
@@ -80,34 +80,31 @@ namespace ZQF::RxSeraph::Script
         return filter_set;
     }
 
-    auto Cryptor::BatchDec(const std::string_view msScriptPath, const std::string_view msSavePath, const std::unordered_set<std::string>& stFilter) -> void
+    auto Cryptor::BatchDec(const std::string_view msScriptDir, const std::string_view msSaveDir, const std::unordered_set<std::string>& stFilter) -> void
     {
+        std::string path_tmp;
         ZxMem tmp_mem(0x64000);
         ZxMem script_mem(0x64000);
 
-        std::filesystem::create_directories(msSavePath);
+        ZxFS::DirMake(msSaveDir, false);
 
-        for (const auto& path_entry : std::filesystem::directory_iterator(msScriptPath))
+        for (ZxFS::Walk walk{ msScriptDir };walk.NextFile();)
         {
-            if (path_entry.is_regular_file() == false) { continue; }
+            std::string script_path = walk.GetPath();
+            std::string_view script_name = walk.GetName();
 
-            std::filesystem::path target_path = msSavePath / path_entry.path().filename().replace_extension(L".scn");
-
-            if (stFilter.find(path_entry.path().filename().string()) != stFilter.end())
+            if (stFilter.find(std::string{ script_name }) != stFilter.end())
             {
-                if (std::filesystem::exists(target_path))
-                {
-                    std::filesystem::remove(target_path);
-                }
-
-                std::filesystem::copy(path_entry, target_path);
+                ZxFS::FileCopy(script_path, path_tmp.append(msSaveDir).append(ZxFS::FileSuffixDel(script_name)).append(".cfg"), false);
             }
             else
             {
-                script_mem.Load(path_entry.path().string());
+                script_mem.Load(script_path);
                 Cryptor::Dec(script_mem, tmp_mem);
-                tmp_mem.Save(target_path.string());
+                tmp_mem.Save(path_tmp.append(msSaveDir).append(ZxFS::FileSuffixDel(script_name)).append(".scn"));
             }
+
+            path_tmp.clear();
         }
     }
 

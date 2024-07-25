@@ -29,7 +29,7 @@ namespace ZQF::RxSeraph::Script::V2
         auto ParseSelect(ZxJson::JArray_t& jaCodes, const std::size_t nSelectCodeSize) -> void;
 
     public:
-        auto Parse(std::vector<std::string>& vcNameTable) -> ZxJson::JValue;
+        auto Parse(std::vector<std::string>& vcNameTable) -> ZxJson::JArray_t;
 
     };
 }

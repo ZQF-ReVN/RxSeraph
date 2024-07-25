@@ -1,21 +1,21 @@
+#include <print>
 #include <iostream>
 #include <ranges>
-#include <unordered_map>
-#include <filesystem>
+#include <ZxFS/ZxFS.h>
+#include <ZxFile/ZxFile.h>
+#include <ZxJson/JIO.h>
 #include <ZxJson/JValue.h>
 #include <ZxJson/JParser.h>
-#include <ZxJson/JDoc.h>
-#include <ZxFile/ZxFile.h>
 #include <RxSeraph/Script.h>
 #include <RxSeraph/Script_Cryptor.h>
 
 
 [[maybe_unused]]  static auto GetNameTable(const std::string_view msNameTablePath, const std::string_view msGameTitle) -> std::vector<std::string>
 {
-    ZQF::ZxJson::JDoc name_table_doc{ msNameTablePath };
+    auto json_name_table = ZQF::ZxJson::LoadViaFile(msNameTablePath);
 
 	std::vector<std::string> name_table;
-	for (auto& name : name_table_doc.GetJObject()[msGameTitle.data()].Get<ZQF::ZxJson::JArray_t&>())
+	for (auto& name : json_name_table[std::string(msGameTitle)].Get<ZQF::ZxJson::JArray_t&>())
 	{
 		name_table.emplace_back(name.Get<std::string>());
 	}
@@ -27,8 +27,8 @@
 {
 	std::string txt;
 	std::string_view char_name;
-    ZQF::ZxJson::JDoc codes_json{ msJsonPath };
-	for (auto& code : codes_json.GetJArray())
+    auto json_codes = ZQF::ZxJson::LoadViaFile(msJsonPath);
+	for (auto& code : json_codes.Get<ZQF::ZxJson::JArray_t&>())
 	{
 		std::string_view code_name = code["self"].Get<std::string_view>();
 		if (code_name == "character")
@@ -80,19 +80,23 @@
 {
 	std::vector<std::string> name_table = GetNameTable("name_table.json", "[061215][EX12] 雛鳥の堕ちる音");
 
+    std::string path_tmp;
 	ZQF::ZxMem script_mem;
-	std::filesystem::path save_folder = L"json/";
-	std::filesystem::create_directories(save_folder);
-	for (const auto& path_entry : std::filesystem::directory_iterator("scn_dec/"))
+	std::string_view save_folder = "json/";
+	ZQF::ZxFS::DirMake(save_folder,false);
+    for (ZQF::ZxFS::Walk walk{ "scn_dec/" }; walk.NextFile() ;)
 	{
-		if (path_entry.is_regular_file() == false) { continue; }
-
-		/*script_mem.Load(path_entry.path().string());*/
-        script_mem.Load(path_entry.path().string());
+        if (!walk.IsSuffix(".scn")) { continue; }
+        script_mem.Load(walk.GetPath());
 		ZQF::RxSeraph::Script::V2::Parser script(script_mem.Span(), 932);
-        ZQF::ZxJson::JDoc jdoc;
-        jdoc.GetJValue() = script.Parse(name_table);
-        jdoc.StoreViaFile((save_folder / path_entry.path().filename().replace_extension(".json")).string(), true, true);
+        auto script_jarry = script.Parse(name_table);
+        if (!script_jarry.empty())
+        {
+            auto& save_path = path_tmp.append(save_folder).append(ZQF::ZxFS::FileSuffixDel(walk.GetName())).append(".json");
+            ZQF::ZxJson::JValue json_val = std::move(script_jarry);
+            ZQF::ZxJson::StoreViaFile(save_path, json_val, true, true);
+            path_tmp.clear();
+        }
 	}
 }
 
@@ -103,15 +107,15 @@
 
 [[maybe_unused]] static auto ExportBatch() -> void
 {
-	std::filesystem::path save_folder = "human/";
-	std::filesystem::create_directories(save_folder);
-	for (const auto& path_entry : std::filesystem::directory_iterator("json/"))
+    std::string path_tmp;
+	std::string_view save_folder = "human/";
+    ZQF::ZxFS::DirMake(save_folder, false);
+	for (ZQF::ZxFS::Walk walk{ "json/" }; walk.NextFile();)
 	{
-		if (path_entry.is_regular_file() == false) { continue; }
-        ExportText(path_entry.path().string(), (save_folder / path_entry.path().filename().replace_extension(".txt")).string());
+        ExportText(walk.GetPath(), path_tmp.append(save_folder).append(ZQF::ZxFS::FileSuffixDel(walk.GetName())).append(".txt"));
+        path_tmp.clear();
 	}
 }
-
 
 
 auto main() -> int
@@ -119,8 +123,8 @@ auto main() -> int
     try
     {
         TestParse();
-        // ExportBatch();
-        //ZQF::RxSeraph::Script::Cryptor::BatchDec("ScnPac/", "scn_dec/", "script_filter.json", "[061215][EX12] 雛鳥の堕ちる音");
+        ExportBatch();
+        // ZQF::RxSeraph::Script::Cryptor::BatchDec("ScnPac/", "scn_dec/", "script_filter.json", "[061215][EX12] 雛鳥の堕ちる音");
     }
     catch (const std::exception& err)
     {

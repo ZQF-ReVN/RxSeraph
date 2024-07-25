@@ -24,9 +24,16 @@ FetchContent_MakeAvailable(ZxCvt)
 FetchContent_Declare(
   ZxJson
   GIT_REPOSITORY https://github.com/ZQF-Zut/ZxJson.git
-  GIT_TAG db32283633cea96b3799a4eb60c0421183f2ac19)
+  GIT_TAG 46e2de23c6e40ef26b838620637d660c2f076017)
 
 FetchContent_MakeAvailable(ZxJson)
+
+FetchContent_Declare(
+  ZxFS
+  GIT_REPOSITORY https://github.com/ZQF-Zut/ZxFS.git
+  GIT_TAG b8fa173334e845a9d39c5627865ff6f456d89d4d)
+
+FetchContent_MakeAvailable(ZxFS)
 
 if(WIN32)
     set(ZLIB_BUILD_EXAMPLES OFF)

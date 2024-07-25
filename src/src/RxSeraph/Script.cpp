@@ -54,9 +54,9 @@ namespace ZQF::RxSeraph::Script::V2
         m_Reader.SkipPC(static_cast<std::uint32_t>(nSelectCodeSize + 0xA + text_0.size() + text_1.size() + 2 + 1));
     }
 
-    auto Parser::Parse(std::vector<std::string>& vcNameTable) -> ZxJson::JValue
+    auto Parser::Parse(std::vector<std::string>& vcNameTable) -> ZxJson::JArray_t
     {
-        if (m_Reader.GetScriptSize() <= 31) { return ZxJson::JValue{}; }
+        if (m_Reader.GetScriptSize() <= 31) { return ZxJson::JArray_t{}; }
 
         constexpr std::array<std::uint8_t, 31> search_draw_select_box =
         {
