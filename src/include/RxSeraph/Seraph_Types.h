@@ -17,8 +17,8 @@ namespace ZQF::RxSeraph
 
     struct Dat_Segment_Entry
     {
-        uint32_t nSegmentFOA;
-        uint32_t nFileCnt;
+        std::uint32_t nSegmentFOA;
+        std::uint32_t nFileCnt;
 
         static consteval auto Sizebyte() -> std::size_t
         {

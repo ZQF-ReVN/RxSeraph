@@ -11,7 +11,7 @@ namespace ZQF::RxSeraph::Pack
 
     }
 
-    IndexTable::IndexTable(const std::string_view msPackPath, const uint32_t uiIndexOffset)
+    IndexTable::IndexTable(const std::string_view msPackPath, const std::uint32_t uiIndexOffset)
     {
         this->ReadIndex(msPackPath, uiIndexOffset);
     }
@@ -75,7 +75,7 @@ namespace ZQF::RxSeraph::Pack
         }
     }
 
-    auto IndexTable::ReadIndex(const std::string_view msPackPath, const uint32_t uiIndexOffset) -> void
+    auto IndexTable::ReadIndex(const std::string_view msPackPath, const std::uint32_t uiIndexOffset) -> void
     {
         if (uiIndexOffset == 0)
         {

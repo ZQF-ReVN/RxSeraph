@@ -28,7 +28,7 @@ namespace ZQF::RxSeraph::Pack
         auto ReadSegmentIndex(const std::string_view msPackPath, const std::uint32_t uiIndexOffset) -> void;
 
     public:
-        auto ReadIndex(const std::string_view msPackPath, const uint32_t uiIndexOffset = 0) -> void;
+        auto ReadIndex(const std::string_view msPackPath, const std::uint32_t uiIndexOffset = 0) -> void;
 
     public:
         auto GetVector() const -> const std::vector<Entry>&;
