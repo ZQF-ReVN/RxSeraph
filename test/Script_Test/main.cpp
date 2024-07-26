@@ -6,6 +6,7 @@
 #include <ZxJson/JIO.h>
 #include <ZxJson/JValue.h>
 #include <ZxJson/JParser.h>
+#include <RxSeraph/Pack.h>
 #include <RxSeraph/Script.h>
 #include <RxSeraph/Script_Cryptor.h>
 
@@ -115,10 +116,12 @@ auto main() -> int
 {
     try
     {
+        ZQF::RxSeraph::Pack::Export("ScnPac.Dat", "ScnPac/", 0x0);
+        ZQF::RxSeraph::Script::Cryptor::BatchDec("ScnPac/", "scn_dec/", "script_filter.json", "[061215][EX12] 雛鳥の堕ちる音");
         std::vector<std::string> name_table = LoadNameTable("name_table.json", "[061215][EX12] 雛鳥の堕ちる音");
         ParseToJson("scn_dec/", "json/", 932, name_table);
         JsonToTXT("json/", "human/");
-        // ZQF::RxSeraph::Script::Cryptor::BatchDec("ScnPac/", "scn_dec/", "script_filter.json", "[061215][EX12] 雛鳥の堕ちる音");
+        
     }
     catch (const std::exception& err)
     {
