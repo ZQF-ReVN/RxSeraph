@@ -44,7 +44,22 @@ if(WIN32)
 
     FetchContent_MakeAvailable(zlib)
 
-    add_library(ZLIB::ZLIB ALIAS zlibstatic)
+    if(BUILD_SHARED_LIBS)
+        add_library(ZLIB::ZLIB ALIAS zlib)
+    else()
+        add_library(ZLIB::ZLIB ALIAS zlibstatic)
+    endif()
+    
 elseif(UNIX)
     find_package(ZLIB REQUIRED)
+endif()
+
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    FetchContent_Declare(
+        ZxHook
+        GIT_REPOSITORY https://github.com/ZQF-Zut/ZxHook.git
+        GIT_TAG 2a62970fc8df8ae4102af05c35efd1d539dff7ba)
+
+    FetchContent_MakeAvailable(ZxHook)
 endif()

@@ -25,6 +25,4 @@ namespace ZQF::RxSeraph
             return sizeof(nSegmentFOA) + sizeof(nFileCnt);
         }
     };
-
-    // typedef void(__stdcall* Fn_ScriptLoad)();
 }

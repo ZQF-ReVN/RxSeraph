@@ -1,11 +1,11 @@
-#include "VFS.h"
-#include "Seraph_Types.h"
-#include <Rut/RxFile.h>
-#include <RxHook/Hook.h>
+#include <RxSeraph/VFS.h>
+#include <ZxHook/Hook.h>
 
 
-namespace Seraph::VFS
+namespace ZQF::RxSeraph::VFS
 {
+    typedef void(__stdcall* Fn_ScriptLoad)();
+
 	static uint32_t** sg_ppScript = nullptr;
 	static uint32_t** sg_ppScriptTemp = nullptr;
 	static uint32_t* sg_pCurCodeSlot = nullptr;
@@ -19,10 +19,10 @@ namespace Seraph::VFS
 		if (*sg_pPackReadMod == 0)
 		{
 			*sg_pCurCodeSlot ? (void)(*sg_ppScript = *sg_ppScriptTemp) : (void)(*sg_pCurCodeSlot = 0);
-			wchar_t path[64];
-			::wsprintfW(path, L"ScnPac/%08d.scn", *sg_pPackReadSeq);
-			Rut::RxFile::Binary ifs{ path, Rut::RIO_READ };
-			ifs.Read(*sg_ppScriptTemp, ifs.GetSize());
+			//wchar_t path[64];
+			//::wsprintfW(path, L"ScnPac/%08d.scn", *sg_pPackReadSeq);
+			//Rut::RxFile::Binary ifs{ path, Rut::RIO_READ };
+			//ifs.Read(*sg_ppScriptTemp, ifs.GetSize());
 		}
 		else
 		{
@@ -39,6 +39,7 @@ namespace Seraph::VFS
 		sg_pPackReadSeq = (uint32_t*)nPackReadSeq;
 		sg_pPackReadMod = (uint32_t*)nPackReadMod;
 		sg_fnScriptLoad = (Fn_ScriptLoad)fnScriptLoad;
-		Rut::RxHook::Detours::AttachDirectly(&sg_fnScriptLoad, ScriptLoad_Hook);
+
+        ZxHook::Detours::AttachDirectly(&sg_fnScriptLoad, VFS::ScriptLoad_Hook);
 	}
 }
