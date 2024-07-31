@@ -15,7 +15,7 @@ namespace ZQF::RxSeraph::Script::V2
         Expression(Reader& rReader);
 
     private:
-        auto ParseInstrName() const->std::string_view;
+        auto ParseInstrName() const -> std::string_view;
         auto ParseInstrParam() -> ZxJson::JValue;
 
     public:

@@ -84,29 +84,31 @@ namespace ZQF::RxSeraph::Script::V2
 
         do
         {
-            ZxJson::JObject_t instr;
-            instr["opcode"] = m_Reader.ReadOP();
-            instr["command"] = this->ParseInstrName();
-            instr["parameter"] = this->ParseInstrParam();
+            ZxJson::JObject_t instr
+            {
+                { "opcode", m_Reader.ReadOP() },
+                { "command", this->ParseInstrName() },
+                { "parameter", this->ParseInstrParam() }
+            };
             codes.emplace_back(std::move(instr));
         } while (m_Reader.GetCurOP() != 0xFF);
 
         return codes;
     }
 
-    auto Scenario::Make(ZxMem& rfMem, ZxJson::JValue& rCodes, const std::size_t nCodePage) -> void
+    auto Scenario::Make(ZxMem& rfMem, const ZxJson::JValue& rCodes, const std::size_t nCodePage) -> void
     {
         ZxCvt cvt;
-        for (auto& instr : rCodes.Get<ZxJson::JArray_t&>())
+        for (const auto& instr : rCodes.GetArray())
         {
-            const std::uint8_t op = instr["opcode"].Get<std::uint8_t>();
+            const auto op = instr.At("opcode").GetNum<std::uint8_t>();
             rfMem << op;
 
             switch (op)
             {
             case RxSeraph::Script::V2::Scenario_Text_Push:
             {
-                const std::string_view text_dbcs = cvt.UTF8ToMBCS(instr["parameter"]["value"].Get<std::string_view>(), nCodePage);
+                const auto text_dbcs = cvt.UTF8ToMBCS(instr.At("parameter").At("value").GetStrView(), nCodePage);
                 rfMem << std::span{ text_dbcs.data() , text_dbcs.size() + 1 };
             }
             break;
@@ -126,13 +128,13 @@ namespace ZQF::RxSeraph::Script::V2
             case RxSeraph::Script::V2::Scenario_Se_Play:
             case RxSeraph::Script::V2::Scenario_Cursor_Allow_Click:
             case RxSeraph::Script::V2::Scenario_Text_Indent_At:
-            case RxSeraph::Script::V2::Scenario_Screen_Shake: { rfMem << instr["parameter"]["value"].Get<uint8_t>(); } break;
+            case RxSeraph::Script::V2::Scenario_Screen_Shake: { rfMem << instr.At("parameter").At("value").GetNum<uint8_t>(); } break;
             case RxSeraph::Script::V2::Scenario_Next_Line:
             case RxSeraph::Script::V2::Scenario_Input_Wait:
             case RxSeraph::Script::V2::Scenario_Text_Indent_Flag:
             case RxSeraph::Script::V2::Scenario_Next_Page:
             case RxSeraph::Script::V2::Scenario_End: break;
-            case RxSeraph::Script::V2::Scenario_Voice_Play: { rfMem << instr["parameter"]["value"].Get<uint32_t>(); } break;
+            case RxSeraph::Script::V2::Scenario_Voice_Play: { rfMem << instr.At("parameter").At("value").GetNum<uint32_t>(); } break;
             default: throw std::runtime_error("Scenario::Make: Error!");
             }
         }

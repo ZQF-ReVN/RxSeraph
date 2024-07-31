@@ -13,12 +13,12 @@
 
 [[maybe_unused]] static auto LoadNameTable(const std::string_view msNameTablePath, const std::string_view msGameTitle) -> std::vector<std::string>
 {
-    auto json_name_table = ZQF::ZxJson::LoadViaFile(msNameTablePath);
+    const auto json_name_table = ZQF::ZxJson::LoadViaFile(msNameTablePath);
 
     std::vector<std::string> name_table;
-    for (auto& name : json_name_table[std::string(msGameTitle)].Get<ZQF::ZxJson::JArray_t&>())
+    for (const auto& name : json_name_table.At(msGameTitle).GetArray())
     {
-        name_table.emplace_back(name.Get<std::string>());
+        name_table.emplace_back(name.GetStr());
     }
 
     return name_table;
@@ -28,18 +28,18 @@
 {
     std::string txt;
     std::string_view char_name;
-    auto json_codes = ZQF::ZxJson::LoadViaFile(msJsonPath);
-    for (auto& code : json_codes.Get<ZQF::ZxJson::JArray_t&>())
+    const auto json_codes = ZQF::ZxJson::LoadViaFile(msJsonPath);
+    for (const auto& code : json_codes.GetArray())
     {
-        std::string_view code_name = code["self"].Get<std::string_view>();
+        std::string_view code_name = code.At("self").GetStrView();
         if (code_name == "character")
         {
-            char_name = code["name"].Get<std::string_view>();
+            char_name = code.At("name").GetStrView();
         }
         else if (code_name == "msg")
         {
             txt.append("*msg:");
-            txt.append(std::to_string(code["begin"].Get<size_t>()));
+            txt.append(std::to_string(code.At("begin").GetNum<size_t>()));
             txt.append(1, '\n');
             if (char_name.size())
             {
@@ -49,12 +49,12 @@
             }
             char_name = "";
 
-            for (auto& msg_code : code["texts"].Get<ZQF::ZxJson::JArray_t&>())
+            for (auto& msg_code : code.At("texts").GetArray())
             {
-                auto& msg_code_obj = msg_code.Get<ZQF::ZxJson::JObject_t&>();
-                switch (msg_code_obj["opcode"].Get<uint8_t>())
+                const auto& msg_code_obj = msg_code.GetObject();
+                switch (msg_code_obj.at("opcode").GetNum<uint8_t>())
                 {
-                case 0x00: txt.append(msg_code_obj["parameter"]["value"].Get<std::string_view>()); break;
+                case 0x00: txt.append(msg_code_obj.at("parameter").At("value").GetStrView()); break;
                 case 0x14: txt.append("[n]"); break;
                 case 0x17: txt.append(1, '\n'); break;
                 case 0xFF: txt.append("\n\n"); break;
@@ -64,9 +64,9 @@
         else if (code_name == "select")
         {
             txt.append("*select:\n");
-            for (auto& sel_text : code["texts"].Get<ZQF::ZxJson::JArray_t&>())
+            for (const auto& sel_text : code.At("texts").GetArray())
             {
-                txt.append(sel_text.Get<std::string_view>());
+                txt.append(sel_text.GetStr());
                 txt.append(1, '\n');
             }
             txt.append(1, '\n');
@@ -121,7 +121,7 @@ auto main() -> int
         std::vector<std::string> name_table = LoadNameTable("name_table.json", "[061215][EX12] 雛鳥の堕ちる音");
         ParseToJson("scn_dec/", "json/", 932, name_table);
         JsonToTXT("json/", "human/");
-        
+
     }
     catch (const std::exception& err)
     {

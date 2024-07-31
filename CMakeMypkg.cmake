@@ -24,7 +24,7 @@ FetchContent_MakeAvailable(ZxCvt)
 FetchContent_Declare(
   ZxJson
   GIT_REPOSITORY https://github.com/ZQF-Zut/ZxJson.git
-  GIT_TAG 46e2de23c6e40ef26b838620637d660c2f076017)
+  GIT_TAG d66363f9b356a8a1ce87cf82360df29bbb2051d2)
 
 FetchContent_MakeAvailable(ZxJson)
 
@@ -55,7 +55,7 @@ elseif(UNIX)
 endif()
 
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if((CMAKE_SYSTEM_NAME STREQUAL "Windows") AND MSVC)
     FetchContent_Declare(
         ZxHook
         GIT_REPOSITORY https://github.com/ZQF-Zut/ZxHook.git

@@ -165,10 +165,13 @@ namespace ZQF::RxSeraph::Script::V2
 
         do
         {
-            ZxJson::JObject_t instr;
-            instr["opcode"] = m_Reader.ReadOP();
-            instr["command"] = this->ParseInstrName();
-            instr["parameter"] = this->ParseInstrParam();
+            ZxJson::JObject_t instr
+            {
+                {" opcode", m_Reader.ReadOP() },
+                { "command", this->ParseInstrName() },
+                { "parameter", this->ParseInstrParam() }
+            };
+
             codes.emplace_back(std::move(instr));
         } while (m_Reader.GetCurOP() != 0xFF);
 

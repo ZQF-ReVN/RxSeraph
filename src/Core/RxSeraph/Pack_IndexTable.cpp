@@ -18,8 +18,8 @@ namespace ZQF::RxSeraph::Pack
 
     auto IndexTable::ReadIndexBased(ZxMem& rfIndexMem, const std::uint32_t uiDataBegOffset, const std::uint32_t uiFileCount) -> void
     {
-        std::uint32_t first_offset = rfIndexMem.Get<std::uint32_t>() + uiDataBegOffset;
-        std::uint32_t next_offset = rfIndexMem.Get<std::uint32_t>() + uiDataBegOffset;
+        auto first_offset = rfIndexMem.Get<std::uint32_t>() + uiDataBegOffset;
+        auto next_offset = rfIndexMem.Get<std::uint32_t>() + uiDataBegOffset;
         for ([[maybe_unused]] auto _ : std::views::iota(0u, uiFileCount))
         {
             m_vcIndex.emplace_back(IndexTable::Entry{ .nFOA = first_offset, .nSize = next_offset - first_offset });
@@ -31,7 +31,7 @@ namespace ZQF::RxSeraph::Pack
     auto IndexTable::ReadGenericIndex(const std::string_view msPackPath) -> void
     {
         ZxFile ifs_pack{ msPackPath, ZxFile::OpenMod::ReadSafe };
-        const std::uint32_t file_count = ifs_pack.Get<uint32_t>();
+        const auto file_count = ifs_pack.Get<uint32_t>();
         ZxMem index_mem((file_count + 2) * sizeof(std::uint32_t));
         ifs_pack.Read(index_mem.Span());
         this->ReadIndexBased(index_mem, 0, file_count);
@@ -47,17 +47,20 @@ namespace ZQF::RxSeraph::Pack
 
         ZxMem cache_mem;
 
-        ZxMem& seg_mem = cache_mem;
+        ZxMem& seg_index_table_mem = cache_mem;
         std::vector<Dat_Segment_Entry> seg_entry_vec;
         {
-            ifs_pack.Read(seg_mem.Resize(hdr.nSegmentCnt * Dat_Sengmet_HDR::Sizebyte()).Span());
+            const auto seg_index_table_mem_bytes = static_cast<std::size_t>(hdr.nSegmentCnt) * Dat_Sengmet_HDR::Sizebyte();
+            ifs_pack.Read(seg_index_table_mem.Resize(seg_index_table_mem_bytes).Span());
 
             for ([[maybe_unused]] auto _ : std::views::iota(0u, hdr.nSegmentCnt))
             {
-                seg_entry_vec.emplace_back(
-                    Dat_Segment_Entry{
-                    .nSegmentFOA = seg_mem.Get<std::uint32_t>(),
-                    .nFileCnt = seg_mem.Get<std::uint32_t>()
+                seg_entry_vec.emplace_back
+                (
+                    Dat_Segment_Entry
+                    {
+                    .nSegmentFOA = seg_index_table_mem.Get<std::uint32_t>(),
+                    .nFileCnt = seg_index_table_mem.Get<std::uint32_t>()
                     }
                 );
             }
@@ -68,9 +71,10 @@ namespace ZQF::RxSeraph::Pack
             for (auto ite_seg_entry = std::rbegin(seg_entry_vec); ite_seg_entry != std::rend(seg_entry_vec); ite_seg_entry++)
             {
                 Dat_Segment_Entry& seg_entry = *ite_seg_entry;
-                ifs_pack.Read(index_mem.Resize((seg_entry.nFileCnt + 2) * sizeof(uint32_t)).Span());
+                const auto index_table_bytes = static_cast<std::size_t>(seg_entry.nFileCnt + 2) * sizeof(std::uint32_t);
+                ifs_pack.Read(index_mem.Resize(index_table_bytes).Span());
                 this->ReadIndexBased(index_mem, seg_entry.nSegmentFOA, seg_entry.nFileCnt);
-                ifs_pack.SetPtr(static_cast<uint64_t>(-4), ZxFile::MoveWay::Cur);
+                ifs_pack.SetPtr(static_cast<std::uint64_t>(-4), ZxFile::MoveWay::Cur);
             }
         }
     }

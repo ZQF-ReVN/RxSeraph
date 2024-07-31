@@ -1,5 +1,6 @@
 #include <RxSeraph/Script_Cryptor.h>
 #include <ZxJson/JDoc.h>
+#include <ZxJson/JIO.h>
 #include <ZxFS/ZxFS.h>
 
 
@@ -13,7 +14,7 @@ namespace ZQF::RxSeraph::Script
     auto Cryptor::LZ77Dec(std::uint8_t* pRaw, std::uint8_t* pDec) -> std::size_t
     {
         std::size_t ite_size = 0;
-        std::size_t dec_size = (std::size_t)(*((std::uint32_t*)pRaw));
+        std::size_t dec_size = static_cast<std::size_t>(*reinterpret_cast<std::uint32_t*>(pRaw));
 
         std::uint8_t* dec_ptr = pDec;
         std::uint8_t* enc_ptr = pRaw + 4;
@@ -30,7 +31,7 @@ namespace ZQF::RxSeraph::Script
                 std::uint32_t copy_size = (expand_info & 0x1F) + 1;
                 ite_size += copy_size;
 
-                std::uint32_t back_offset = (std::uint16_t)(((expand_info >> 5) & 0x3FF) + 1);
+                std::uint32_t back_offset = static_cast<std::uint16_t>((expand_info >> 5) & 0x3FF) + 1;
                 std::uint8_t* back_ptr = dec_ptr - back_offset;
 
                 do
@@ -58,23 +59,23 @@ namespace ZQF::RxSeraph::Script
     auto Cryptor::Dec(ZxMem& rScript, ZxMem& rDec, const std::size_t nMaxDecSize) -> bool
     {
         rDec.Resize(nMaxDecSize);
-        std::size_t size = Cryptor::LZ77Dec(rScript.Ptr(), rDec.Ptr());
-        rDec.Resize(size);
-        return size ? true : false;
+        const auto dec_size = Cryptor::LZ77Dec(rScript.Ptr<std::uint8_t*>(), rDec.Ptr<std::uint8_t*>());
+        rDec.Resize(dec_size, false, true);
+        return dec_size ? true : false;
     }
 
     auto Cryptor::GetFilterSet(const std::string_view msFilterPath, const std::string_view msGameName) -> std::unordered_set<std::string>
     {
-        ZxJson::JDoc filter_json{ msFilterPath };
-        auto& filter_map = filter_json.GetJObject();
+        const auto filter_json = ZQF::ZxJson::LoadViaFile(msFilterPath);
+        const auto& filter_map = filter_json.GetObject();
 
         const auto find_ite = filter_map.find(msGameName);
         if (find_ite == filter_map.end()) { throw std::runtime_error("GetFilterSet: not find target game filter obj"); }
 
         std::unordered_set<std::string> filter_set;
-        for (auto& val : find_ite->second.Get<ZxJson::JArray_t&>())
+        for (const auto& val : find_ite->second.GetArray())
         {
-            filter_set.insert(val.Get<std::string>());
+            filter_set.insert(val.GetStr());
         }
 
         return filter_set;
@@ -90,8 +91,8 @@ namespace ZQF::RxSeraph::Script
 
         for (ZxFS::Walk walk{ msScriptDir };walk.NextFile();)
         {
-            std::string script_path = walk.GetPath();
-            std::string_view script_name = walk.GetName();
+            const auto script_path = walk.GetPath();
+            const auto script_name = walk.GetName();
 
             if (stFilter.find(std::string{ script_name }) != stFilter.end())
             {
