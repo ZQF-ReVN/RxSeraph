@@ -1,14 +1,15 @@
 #include <print>
 #include <iostream>
 #include <ranges>
-#include <ZxFS/ZxFS.h>
+#include <ZxFS/Core.h>
+#include <ZxFS/Walker.h>
 #include <ZxFile/ZxFile.h>
 #include <ZxJson/JIO.h>
 #include <ZxJson/JValue.h>
 #include <ZxJson/JParser.h>
-#include <RxSeraph/Pack.h>
-#include <RxSeraph/Script.h>
-#include <RxSeraph/Script_Cryptor.h>
+#include <RxSeraph/Core/Pack.h>
+#include <RxSeraph/Core/Script.h>
+#include <RxSeraph/Core/Script_Cryptor.h>
 
 
 [[maybe_unused]] static auto LoadNameTable(const std::string_view msNameTablePath, const std::string_view msGameTitle) -> std::vector<std::string>
@@ -81,7 +82,7 @@
     std::string path_tmp;
     ZQF::ZxMem script_mem;
     ZQF::ZxFS::DirMake(msSaveDir, false);
-    for (ZQF::ZxFS::Walk walk{ msScriptDir }; walk.NextFile();)
+    for (ZQF::ZxFS::Walker walk{ msScriptDir }; walk.NextFile();)
     {
         if (!walk.IsSuffix(".scn")) { continue; }
         ZQF::RxSeraph::Script::V2::Parser script_parser(script_mem.Load(walk.GetPath()).Span(), nCodePage);
@@ -104,7 +105,7 @@
 {
     std::string path_tmp;
     ZQF::ZxFS::DirMake(msSaveDir, false);
-    for (ZQF::ZxFS::Walk walk{ msJsonDir }; walk.NextFile();)
+    for (ZQF::ZxFS::Walker walk{ msJsonDir }; walk.NextFile();)
     {
         ExportTextViaJson(walk.GetPath(), path_tmp.append(msSaveDir).append(ZQF::ZxFS::FileSuffixDel(walk.GetName())).append(".txt"));
         path_tmp.clear();

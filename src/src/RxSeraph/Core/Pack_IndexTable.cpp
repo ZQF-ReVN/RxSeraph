@@ -1,5 +1,5 @@
-#include <RxSeraph/Pack_IndexTable.h>
-#include <RxSeraph/Seraph_Types.h>
+#include <RxSeraph/Core/Pack_IndexTable.h>
+#include <RxSeraph/Core/Seraph_Types.h>
 #include <ZxFile/ZxFile.h>
 #include <ranges>
 
@@ -40,7 +40,7 @@ namespace ZQF::RxSeraph::Pack
     auto IndexTable::ReadSegmentIndex(const std::string_view msPackPath, const std::uint32_t uiIndexOffset) -> void
     {
         ZxFile ifs_pack{ msPackPath, ZxFile::OpenMod::ReadSafe };
-        ifs_pack.SetPtr(uiIndexOffset, ZxFile::MoveWay::Beg);
+        ifs_pack.Seek(uiIndexOffset, ZxFile::MoveWay::Set);
 
         Dat_Sengmet_HDR hdr{ .nSegmentCnt = ifs_pack.Get<std::uint32_t>(), .nFileCnt = ifs_pack.Get<std::uint32_t>() };
         m_vcIndex.reserve(hdr.nFileCnt);
@@ -74,7 +74,7 @@ namespace ZQF::RxSeraph::Pack
                 const auto index_table_bytes = static_cast<std::size_t>(seg_entry.nFileCnt + 2) * sizeof(std::uint32_t);
                 ifs_pack.Read(index_mem.Resize(index_table_bytes).Span());
                 this->ReadIndexBased(index_mem, seg_entry.nSegmentFOA, seg_entry.nFileCnt);
-                ifs_pack.SetPtr(static_cast<std::uint64_t>(-4), ZxFile::MoveWay::Cur);
+                ifs_pack.Seek(static_cast<std::uint64_t>(-4), ZxFile::MoveWay::Cur);
             }
         }
     }

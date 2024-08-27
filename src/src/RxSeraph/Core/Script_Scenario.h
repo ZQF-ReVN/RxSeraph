@@ -3,7 +3,7 @@
 #include <string_view>
 #include <ZxMem/ZxMem.h>
 #include <ZxJson/JValue.h>
-#include <RxSeraph/Script_Reader.h>
+#include <RxSeraph/Core/Script_Reader.h>
 
 
 namespace ZQF::RxSeraph::Script::V2

@@ -1,6 +1,6 @@
-#include <RxSeraph/Script_Scenario.h>
-#include <RxSeraph/Script_Expression.h>
-#include <RxSeraph/Script_Instruction.h>
+#include <RxSeraph/Core/Script_Scenario.h>
+#include <RxSeraph/Core/Script_Expression.h>
+#include <RxSeraph/Core/Script_Instruction.h>
 #include <ZxCvt/ZxCvt.h>
 #include <stdexcept>
 

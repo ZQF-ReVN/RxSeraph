@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include <ZxHook/Hook.h>
-#include <RxSeraph/VFS.h>
+#include <RxSeraph/Core/VFS.h>
 
 
 static auto StartHook() -> void

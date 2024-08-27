@@ -1,5 +1,5 @@
-#include <RxSeraph/Script_Expression.h>
-#include <RxSeraph/Script_Instruction.h>
+#include <RxSeraph/Core/Script_Expression.h>
+#include <RxSeraph/Core/Script_Instruction.h>
 #include <cstdint>
 #include <stdexcept>
 

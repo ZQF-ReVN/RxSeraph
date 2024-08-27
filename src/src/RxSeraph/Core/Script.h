@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <ZxCvt/ZxCvt.h>
 #include <ZxJson/JValue.h>
-#include <RxSeraph/Script_Reader.h>
-#include <RxSeraph/Script_Scenario.h>
-#include <RxSeraph/Script_Expression.h>
+#include <RxSeraph/Core/Script_Reader.h>
+#include <RxSeraph/Core/Script_Scenario.h>
+#include <RxSeraph/Core/Script_Expression.h>
 
 
 namespace ZQF::RxSeraph::Script::V2

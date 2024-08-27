@@ -1,7 +1,8 @@
-#include <RxSeraph/Script_Cryptor.h>
+#include <RxSeraph/Core/Script_Cryptor.h>
 #include <ZxJson/JDoc.h>
 #include <ZxJson/JIO.h>
-#include <ZxFS/ZxFS.h>
+#include <ZxFS/Core.h>
+#include <ZxFS/Walker.h>
 
 
 namespace ZQF::RxSeraph::Script
@@ -89,7 +90,7 @@ namespace ZQF::RxSeraph::Script
 
         ZxFS::DirMake(msSaveDir, false);
 
-        for (ZxFS::Walk walk{ msScriptDir };walk.NextFile();)
+        for (ZxFS::Walker walk{ msScriptDir };walk.NextFile();)
         {
             const auto script_path = walk.GetPath();
             const auto script_name = walk.GetName();

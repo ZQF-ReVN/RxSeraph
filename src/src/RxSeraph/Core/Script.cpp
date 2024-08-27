@@ -1,4 +1,4 @@
-#include <RxSeraph/Script.h>
+#include <RxSeraph/Core/Script.h>
 #include <array>
 
 

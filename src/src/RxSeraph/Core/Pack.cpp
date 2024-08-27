@@ -1,8 +1,9 @@
-#include <RxSeraph/Pack.h>
-#include <RxSeraph/Pack_Cryptor.h>
-#include <RxSeraph/Pack_IndexTable.h>
+#include <RxSeraph/Core/Pack.h>
+#include <RxSeraph/Core/Pack_Cryptor.h>
+#include <RxSeraph/Core/Pack_IndexTable.h>
 #include <ZxFile/ZxFile.h>
 #include <ranges>
+#include <format>
 
 
 namespace ZQF::RxSeraph::Pack
@@ -33,7 +34,7 @@ namespace ZQF::RxSeraph::Pack
         {
             if (entry.nSize == 0) { continue; }
 
-            ifs_pack.SetPtr(entry.nFOA, ZxFile::MoveWay::Beg);
+            ifs_pack.Seek(entry.nFOA, ZxFile::MoveWay::Set);
             ifs_pack.Read(cache_mem.Resize(entry.nSize).Span());
 
             ZxMem& dec_mem = cryptor.Decrypt(cache_mem);
